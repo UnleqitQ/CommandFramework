@@ -1,0 +1,6 @@
+name: CommandFrameWork
+version: '${project.version}'
+main: me.unleqitq.commandframework.CommandFrameWork
+api-version: 1.18
+load: STARTUP
+authors: [UnleqitQ]

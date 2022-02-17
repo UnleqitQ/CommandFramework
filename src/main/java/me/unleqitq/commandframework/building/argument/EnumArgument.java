@@ -1,0 +1,38 @@
+package me.unleqitq.commandframework.building.argument;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+public class EnumArgument<E extends Enum<E>> extends FrameworkArgument<E> {
+	
+	Class<E> argumentEnum;
+	
+	public EnumArgument(Builder<E> builder) {
+		super(builder);
+	}
+	
+	public static class Builder<E extends Enum<E>> extends FrameworkArgument.Builder<E> {
+		
+		Class<E> argumentEnum;
+		
+		public Builder(String name, Class<E> argumentEnum) {
+			super(name, (c, a) -> null, (c, a) -> null);
+			parser((c, a) -> Arrays.stream(Builder.this.argumentEnum.getEnumConstants()).filter(
+					e -> e.name().equalsIgnoreCase(a)).findFirst().orElse(null));
+			tabComplete((c, a) -> new ArrayList<>(
+					Arrays.stream(Builder.this.argumentEnum.getEnumConstants()).map(Enum::name).filter(
+							s -> s.toLowerCase().startsWith(a.toLowerCase())).toList()));
+		}
+		
+		public Builder<E> setDescription(String description) {
+			this.description = description;
+			return this;
+		}
+		
+		public EnumArgument<E> build() {
+			return new EnumArgument<E>(this);
+		}
+		
+	}
+	
+}
