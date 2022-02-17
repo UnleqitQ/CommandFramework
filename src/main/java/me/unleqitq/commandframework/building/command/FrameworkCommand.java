@@ -85,7 +85,7 @@ public class FrameworkCommand<T extends CommandSender> {
 		protected Builder parent = null;
 		protected String name;
 		protected String description = "";
-		protected CommandHandler handler = c -> {};
+		protected CommandHandler handler = null;
 		
 		protected List<FrameworkCommandElement.Builder> elements = new ArrayList<>();
 		

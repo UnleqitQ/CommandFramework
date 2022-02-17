@@ -132,7 +132,10 @@ public class CommandNode extends Command {
 			}
 		}
 		else {
-			command.getHandler().execute(context);
+			if (command.getHandler() == null)
+				printPaperUsage(context.sender);
+			else
+				command.getHandler().execute(context);
 		}
 	}
 	
