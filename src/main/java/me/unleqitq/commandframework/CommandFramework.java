@@ -2,7 +2,7 @@ package me.unleqitq.commandframework;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class CommandFrameWork extends JavaPlugin {
+public final class CommandFramework extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
