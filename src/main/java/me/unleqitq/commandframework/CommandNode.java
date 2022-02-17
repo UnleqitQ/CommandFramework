@@ -93,19 +93,26 @@ public class CommandNode extends Command {
 		List<FrameworkCommandElement> elements = command.getElements();
 		try {
 			for (FrameworkCommandElement element : elements) {
-				String current = args[i];
 				if (element instanceof FrameworkFlag flag) {
-					if (!("-" + flag.getName()).equalsIgnoreCase(current))
-						continue;
-					context.setFlag(flag.getName());
+					try {
+						String current = args[i];
+						if (!("-" + flag.getName()).equalsIgnoreCase(current))
+							continue;
+						context.setFlag(flag.getName());
+					} catch (ArrayIndexOutOfBoundsException ignored) {
+					}
 				}
 				else if (element instanceof FrameworkArgument<?> argument) {
-					context.arguments.put(argument.getName(), current);
 					if (argument.isOptional()) {
-						if (args.length == i + 1) {
-							i++;
-							break;
+						try {
+							String current = args[i];
+							context.arguments.put(argument.getName(), current);
+						} catch (ArrayIndexOutOfBoundsException ignored) {
 						}
+					}
+					else {
+						String current = args[i];
+						context.arguments.put(argument.getName(), current);
 					}
 				}
 				i++;
@@ -153,15 +160,21 @@ public class CommandNode extends Command {
 				else {
 					if (startElement == null)
 						startElement = element.getName();
+					endElement = element.getName();
 					if (element instanceof FrameworkFlag flag) {
 						if (("-" + flag.getName()).toLowerCase().contains(current))
 							l.add("-" + flag.getName());
 					}
 					else if (element instanceof FrameworkArgument<?> argument) {
 						l.addAll(argument.getTabCompleteProvider().tabComplete(context, current));
+						
+						try {
+							ActionBar.sendActionBar(context, startElement, endElement);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 						return l;
 					}
-					endElement = element.getName();
 				}
 			}
 		} catch (ArrayIndexOutOfBoundsException ignored) {
@@ -179,13 +192,13 @@ public class CommandNode extends Command {
 				if (child.getCommandName().toLowerCase().startsWith(current))
 					l.add(child.getCommandName());
 			}
-		}
-		
-		try {
-			if (startElement != null) {
-				ActionBar.sendActionBar(context, startElement, endElement);
+			try {
+				if (startElement != null) {
+					ActionBar.sendActionBar(context, startElement, endElement);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		} catch (Exception ignored) {
 		}
 		
 		return l;
@@ -233,8 +246,12 @@ public class CommandNode extends Command {
 			}
 			else if (element instanceof FrameworkArgument<?> argument) {
 				rootComponent.append(Component.text(" "));
-				rootComponent.append(Component.text("<" + argument.getName() + ">").hoverEvent(
-						HoverEvent.showText(Component.text("[Argument] " + argument.getDescription()))));
+				if (argument.isOptional())
+					rootComponent.append(Component.text("[" + argument.getName() + "]").hoverEvent(
+							HoverEvent.showText(Component.text("[Argument] " + argument.getDescription()))));
+				else
+					rootComponent.append(Component.text("<" + argument.getName() + ">").hoverEvent(
+							HoverEvent.showText(Component.text("[Argument] " + argument.getDescription()))));
 			}
 		}
 		if (children.size() > 0 && last) {
@@ -269,7 +286,10 @@ public class CommandNode extends Command {
 			}
 			else if (element instanceof FrameworkArgument<?> argument) {
 				sb.append(" ");
-				sb.append("<" + argument.getName() + ">");
+				if (argument.isOptional())
+					sb.append("[" + argument.getName() + "]");
+				else
+					sb.append("<" + argument.getName() + ">");
 			}
 		}
 		if (children.size() > 0 && last) {
@@ -327,6 +347,7 @@ public class CommandNode extends Command {
 		}
 		else {
 			sb.append(parent.getActionBarUsage(startElement, endElement, editingCurrent, false));
+			sb.append(" " + command.getName());
 		}
 		List<FrameworkCommandElement> elements = command.getElements();
 		for (FrameworkCommandElement element : elements) {
@@ -345,7 +366,10 @@ public class CommandNode extends Command {
 				if (editingCurrent[0]) {
 					sb.append(ChatColor.GREEN);
 				}
-				sb.append("<" + argument.getName() + ">");
+				if (argument.isOptional())
+					sb.append("[" + argument.getName() + "]");
+				else
+					sb.append("<" + argument.getName() + ">");
 				sb.append(ChatColor.GRAY);
 			}
 			if (element.getName().equals(endElement))

@@ -126,9 +126,9 @@ public class FrameworkCommand<T extends CommandSender> {
 			return this;
 		}
 		
-		public <S extends Builder> S setDescription(String description) {
+		public Builder<T> setDescription(String description) {
 			this.description = description;
-			return (S) this;
+			return this;
 		}
 		
 		public Class<T> getSenderClass() {
