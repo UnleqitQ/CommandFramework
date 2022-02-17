@@ -13,8 +13,8 @@ public class BooleanArgument extends FrameworkArgument<Boolean> {
 		return new Builder(name);
 	}
 	
-	public static Builder optional(String name) {
-		return (Builder) new Builder(name).optional();
+	public static Builder optional(String name, boolean defaultValue) {
+		return (Builder) new Builder(name).optional(defaultValue);
 	}
 	
 	public static class Builder extends FrameworkArgument.Builder<Boolean> {

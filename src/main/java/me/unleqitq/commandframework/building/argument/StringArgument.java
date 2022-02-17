@@ -12,8 +12,8 @@ public class StringArgument extends FrameworkArgument<String> {
 		return new Builder(name);
 	}
 	
-	public static Builder optional(String name) {
-		return (Builder) new Builder(name).optional();
+	public static Builder optional(String name, String defaultValue) {
+		return (Builder) new Builder(name).optional(defaultValue);
 	}
 	
 	public static class Builder extends FrameworkArgument.Builder<String> {

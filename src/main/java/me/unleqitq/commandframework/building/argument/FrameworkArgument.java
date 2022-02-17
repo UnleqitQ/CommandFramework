@@ -10,12 +10,14 @@ public abstract class FrameworkArgument<T> extends FrameworkCommandElement {
 	protected TabCompleteProvider tabCompleteProvider;
 	protected Parser<T> parser;
 	protected boolean optional;
+	protected T defaultValue;
 	
 	public FrameworkArgument(Builder<T> builder) {
 		super(builder);
 		this.tabCompleteProvider = builder.tabCompleteProvider;
 		this.parser = builder.parser;
 		this.optional = builder.optional;
+		this.defaultValue = builder.defaultValue;
 	}
 	
 	public TabCompleteProvider getTabCompleteProvider() {
@@ -39,6 +41,7 @@ public abstract class FrameworkArgument<T> extends FrameworkCommandElement {
 		protected TabCompleteProvider tabCompleteProvider;
 		protected Parser<T> parser;
 		protected boolean optional;
+		T defaultValue;
 		
 		public Builder(String name, Parser<T> defaultParser, TabCompleteProvider defaultTabCompleteProvider) {
 			super(name);
@@ -65,8 +68,9 @@ public abstract class FrameworkArgument<T> extends FrameworkCommandElement {
 			return optional;
 		}
 		
-		public Builder<T> optional() {
+		public Builder<T> optional(T defaultValue) {
 			this.optional = true;
+			this.defaultValue = defaultValue;
 			return this;
 		}
 		

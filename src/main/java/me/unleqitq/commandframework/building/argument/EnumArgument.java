@@ -15,8 +15,8 @@ public class EnumArgument<E extends Enum<E>> extends FrameworkArgument<E> {
 		return new Builder<>(name, argumentEnum);
 	}
 	
-	public static <E extends Enum<E>> Builder<E> optional(String name, Class<E> argumentEnum) {
-		return (Builder<E>) new Builder<>(name, argumentEnum).optional();
+	public static <E extends Enum<E>> Builder<E> optional(String name, Class<E> argumentEnum, E defaultValue) {
+		return (Builder<E>) new Builder<>(name, argumentEnum).optional(defaultValue);
 	}
 	
 	public static class Builder<E extends Enum<E>> extends FrameworkArgument.Builder<E> {

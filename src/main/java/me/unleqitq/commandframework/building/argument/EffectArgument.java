@@ -16,8 +16,8 @@ public class EffectArgument extends FrameworkArgument<PotionEffectType> {
 		return new Builder(name);
 	}
 	
-	public static Builder optional(String name) {
-		return (Builder) new Builder(name).optional();
+	public static Builder optional(String name, PotionEffectType defaultValue) {
+		return (Builder) new Builder(name).optional(defaultValue);
 	}
 	
 	public static class Builder extends FrameworkArgument.Builder<PotionEffectType> {
