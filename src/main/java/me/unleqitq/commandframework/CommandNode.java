@@ -101,6 +101,12 @@ public class CommandNode extends Command {
 				}
 				else if (element instanceof FrameworkArgument<?> argument) {
 					context.arguments.put(argument.getName(), current);
+					if (argument.isOptional()) {
+						if (args.length == i + 1) {
+							i++;
+							break;
+						}
+					}
 				}
 				i++;
 			}
