@@ -74,14 +74,14 @@ public class CommandNode extends Command {
 		return children.containsKey(name);
 	}
 	
-	public Map<String, FrameworkArgument> allArguments() {
-		Map<String, FrameworkArgument> argumentMap = new HashMap<>();
+	public Map<String, FrameworkArgument<?>> allArguments() {
+		Map<String, FrameworkArgument<?>> argumentMap = new HashMap<>();
 		if (parent != null) {
 			argumentMap.putAll(parent.allArguments());
 		}
 		for (Object element : command.getElements()) {
 			if (element instanceof FrameworkArgument) {
-				argumentMap.put(((FrameworkArgument<?>) element).getName(), (FrameworkArgument) element);
+				argumentMap.put(((FrameworkArgument<?>) element).getName(), (FrameworkArgument<?>) element);
 			}
 		}
 		return argumentMap;

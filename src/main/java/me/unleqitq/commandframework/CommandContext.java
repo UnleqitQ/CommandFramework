@@ -1,5 +1,6 @@
 package me.unleqitq.commandframework;
 
+import me.unleqitq.commandframework.building.argument.FrameworkArgument;
 import org.bukkit.command.CommandSender;
 
 import java.util.HashMap;
@@ -22,9 +23,13 @@ public class CommandContext implements ICommandContext {
 	
 	public <T> T getArgument(String name) {
 		String sarg = getStringArgument(name);
+		FrameworkArgument<T> argument = (FrameworkArgument<T>) commandNode.allArguments().get(name);
 		if (sarg == null)
-			return null;
-		return (T) commandNode.allArguments().get(name).getParser().parse(this, sarg);
+			if (argument.isOptional())
+				return argument.getDefaultValue();
+			else
+				return null;
+		return argument.getParser().parse(this, sarg);
 	}
 	
 	public String getStringArgument(String name) {

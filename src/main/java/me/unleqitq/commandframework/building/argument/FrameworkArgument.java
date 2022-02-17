@@ -32,6 +32,10 @@ public abstract class FrameworkArgument<T> extends FrameworkCommandElement {
 		return optional;
 	}
 	
+	public T getDefaultValue() {
+		return defaultValue;
+	}
+	
 	public void optional() {
 		this.optional = true;
 	}
