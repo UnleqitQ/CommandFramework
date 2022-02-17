@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.unleqitq</groupId>
-    <artifactId>CommandFrameWork</artifactId>
+    <artifactId>CommandFramework</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>CommandFrameWork</name>
+    <name>CommandFramework</name>
 
     <properties>
         <java.version>1.8</java.version>
