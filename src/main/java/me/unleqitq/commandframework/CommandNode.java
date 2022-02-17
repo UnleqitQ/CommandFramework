@@ -195,13 +195,11 @@ public class CommandNode extends Command {
 				if (child.getCommandName().toLowerCase().startsWith(current))
 					l.add(child.getCommandName());
 			}
-			try {
-				if (startElement != null) {
-					ActionBar.sendActionBar(context, startElement, endElement);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		}
+		try {
+			ActionBar.sendActionBar(context, startElement, endElement);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 		return l;
@@ -264,7 +262,8 @@ public class CommandNode extends Command {
 				CommandNode child = iterator.next();
 				rootComponent.append(Component.text(child.getCommandName()).hoverEvent(
 						HoverEvent.showText(Component.text(child.getCommand().getDescription()))));
-				rootComponent.append(Component.text("|"));
+				if (iterator.hasNext())
+					rootComponent.append(Component.text(" | "));
 			}
 		}
 		return rootComponent;
@@ -301,7 +300,7 @@ public class CommandNode extends Command {
 			while (iterator.hasNext()) {
 				CommandNode child = iterator.next();
 				sb.append(child.getCommandName());
-				sb.append("|");
+				sb.append(" | ");
 			}
 		}
 		return sb.toString();
@@ -354,7 +353,7 @@ public class CommandNode extends Command {
 		}
 		List<FrameworkCommandElement> elements = command.getElements();
 		for (FrameworkCommandElement element : elements) {
-			if (element.getName().equals(startElement))
+			if (element.getName().equals(Objects.requireNonNullElse(startElement, "")))
 				editingCurrent[0] = true;
 			if (element instanceof FrameworkFlag flag) {
 				sb.append(" ");
@@ -380,13 +379,15 @@ public class CommandNode extends Command {
 		}
 		if (children.size() > 0 && last) {
 			sb.append(" ");
+			if (startElement == null)
+				editingCurrent[0] = true;
 			if (editingCurrent[0])
 				sb.append(ChatColor.GREEN);
 			Iterator<CommandNode> iterator = children.values().iterator();
 			while (iterator.hasNext()) {
 				CommandNode child = iterator.next();
 				sb.append(child.getCommandName());
-				sb.append("|");
+				sb.append(" | ");
 			}
 			sb.append(ChatColor.GRAY);
 		}
