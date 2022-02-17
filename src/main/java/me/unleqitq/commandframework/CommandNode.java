@@ -184,6 +184,11 @@ public class CommandNode extends Command {
 		
 		}
 		String current = args[i];
+		try {
+			ActionBar.sendActionBar(context, startElement, endElement);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		if (args.length > i + 1) {
 			if (hasChild(current)) {
 				String[] nextArgs = Arrays.copyOfRange(args, i + 1, args.length);
@@ -195,11 +200,6 @@ public class CommandNode extends Command {
 				if (child.getCommandName().toLowerCase().startsWith(current))
 					l.add(child.getCommandName());
 			}
-		}
-		try {
-			ActionBar.sendActionBar(context, startElement, endElement);
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 		
 		return l;
