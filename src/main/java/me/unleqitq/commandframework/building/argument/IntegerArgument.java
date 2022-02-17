@@ -8,6 +8,14 @@ public class IntegerArgument extends FrameworkArgument<Integer> {
 		super(builder);
 	}
 	
+	public static Builder of(String name) {
+		return new Builder(name);
+	}
+	
+	public static Builder optional(String name) {
+		return (Builder) new Builder(name).optional();
+	}
+	
 	public static class Builder extends FrameworkArgument.Builder<Integer> {
 		
 		public Builder(String name) {

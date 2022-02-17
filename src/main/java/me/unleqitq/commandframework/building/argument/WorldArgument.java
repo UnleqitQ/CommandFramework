@@ -11,6 +11,14 @@ public class WorldArgument extends FrameworkArgument<World> {
 		super(builder);
 	}
 	
+	public static Builder of(String name) {
+		return new Builder(name);
+	}
+	
+	public static Builder optional(String name) {
+		return (Builder) new Builder(name).optional();
+	}
+	
 	public static class Builder extends FrameworkArgument.Builder<World> {
 		
 		public Builder(String name) {

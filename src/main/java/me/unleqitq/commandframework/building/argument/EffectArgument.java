@@ -12,6 +12,14 @@ public class EffectArgument extends FrameworkArgument<PotionEffectType> {
 		super(builder);
 	}
 	
+	public static Builder of(String name) {
+		return new Builder(name);
+	}
+	
+	public static Builder optional(String name) {
+		return (Builder) new Builder(name).optional();
+	}
+	
 	public static class Builder extends FrameworkArgument.Builder<PotionEffectType> {
 		
 		public Builder(String name) {
