@@ -108,6 +108,7 @@ public class CommandNode extends Command {
 				}
 				else if (element instanceof FrameworkArgument<?> argument) {
 					if (argument instanceof StringArrayArgument) {
+						System.out.println("String Array");
 						if (argument.isOptional()) {
 							try {
 								String[] c = Arrays.copyOfRange(args, i, args.length);
@@ -117,7 +118,7 @@ public class CommandNode extends Command {
 									context.sender.sendMessage("$4Wrong usage: " + argument.errorMessage());
 									return;
 								}
-							} catch (ArrayIndexOutOfBoundsException ignored) {
+							} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ignored) {
 							}
 						}
 						else {
@@ -129,6 +130,7 @@ public class CommandNode extends Command {
 								return;
 							}
 						}
+						i = args.length;
 						break;
 					}
 					if (argument.isOptional()) {
@@ -153,7 +155,7 @@ public class CommandNode extends Command {
 				}
 				i++;
 			}
-		} catch (ArrayIndexOutOfBoundsException ignored) {
+		} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ignored) {
 			printPaperUsage(context.sender);
 			return;
 		}
