@@ -2,6 +2,7 @@ package me.unleqitq.commandframework;
 
 import me.unleqitq.commandframework.building.FrameworkCommandElement;
 import me.unleqitq.commandframework.building.argument.FrameworkArgument;
+import me.unleqitq.commandframework.building.argument.StringArrayArgument;
 import me.unleqitq.commandframework.building.command.FrameworkCommand;
 import me.unleqitq.commandframework.building.flag.FrameworkFlag;
 import net.kyori.adventure.text.Component;
@@ -106,6 +107,30 @@ public class CommandNode extends Command {
 					}
 				}
 				else if (element instanceof FrameworkArgument<?> argument) {
+					if (argument instanceof StringArrayArgument) {
+						if (argument.isOptional()) {
+							try {
+								String[] c = Arrays.copyOfRange(args, i, args.length);
+								String current = String.join(" ", c);
+								context.arguments.put(argument.getName(), current);
+								if (!argument.test(current)) {
+									context.sender.sendMessage("$4Wrong usage: " + argument.errorMessage());
+									return;
+								}
+							} catch (ArrayIndexOutOfBoundsException ignored) {
+							}
+						}
+						else {
+							String[] c = Arrays.copyOfRange(args, i, args.length);
+							String current = String.join(" ", c);
+							context.arguments.put(argument.getName(), current);
+							if (!argument.test(current)) {
+								context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
+								return;
+							}
+						}
+						break;
+					}
 					if (argument.isOptional()) {
 						try {
 							String current = args[i];
