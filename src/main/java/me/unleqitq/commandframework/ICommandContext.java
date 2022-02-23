@@ -8,6 +8,8 @@ public interface ICommandContext {
 	
 	boolean hasArgument(String name);
 	
+	boolean contains(String name);
+	
 	boolean declaredArgument(String name);
 	
 	boolean declaredFlag(String name);
