@@ -5,6 +5,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class CommandContext implements ICommandContext {
 	
@@ -30,6 +31,16 @@ public class CommandContext implements ICommandContext {
 			else
 				return null;
 		return argument.getParser().parse(this, sarg);
+	}
+	
+	@Override
+	public <T> T get(String name) {
+		return getArgument(name);
+	}
+	
+	@Override
+	public <T> Optional<T> getOptional(String name) {
+		return Optional.ofNullable(get(name));
 	}
 	
 	public String getStringArgument(String name) {
