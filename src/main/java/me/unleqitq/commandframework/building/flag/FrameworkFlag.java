@@ -11,6 +11,10 @@ public class FrameworkFlag extends FrameworkCommandElement {
 		this.symbol = builder.symbol;
 	}
 	
+	public static Builder of(String name) {
+		return new FrameworkFlag.Builder(name, 'a');
+	}
+	
 	public char getSymbol() {
 		return symbol;
 	}
@@ -35,6 +39,11 @@ public class FrameworkFlag extends FrameworkCommandElement {
 		}
 		
 		public Builder setDescription(String description) {
+			super.setDescription(description);
+			return this;
+		}
+		
+		public Builder withDescription(String description) {
 			super.setDescription(description);
 			return this;
 		}

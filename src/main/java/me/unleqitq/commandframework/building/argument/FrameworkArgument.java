@@ -40,6 +40,14 @@ public abstract class FrameworkArgument<T> extends FrameworkCommandElement {
 		this.optional = true;
 	}
 	
+	public boolean test(String argument) {
+		return true;
+	}
+	
+	public String errorMessage() {
+		return "Wrong argument";
+	}
+	
 	public static abstract class Builder<T> extends FrameworkCommandElement.Builder {
 		
 		protected TabCompleteProvider tabCompleteProvider;
@@ -76,6 +84,10 @@ public abstract class FrameworkArgument<T> extends FrameworkCommandElement {
 			this.optional = true;
 			this.defaultValue = defaultValue;
 			return this;
+		}
+		
+		public Builder<T> optional() {
+			return optional(null);
 		}
 		
 		public abstract FrameworkArgument<T> build();

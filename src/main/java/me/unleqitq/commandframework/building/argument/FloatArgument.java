@@ -2,12 +2,12 @@ package me.unleqitq.commandframework.building.argument;
 
 import java.util.ArrayList;
 
-public class DoubleArgument extends FrameworkArgument<Double> {
+public class FloatArgument extends FrameworkArgument<Float> {
 	
-	protected double minimum;
-	protected double maximum;
+	protected float minimum;
+	protected float maximum;
 	
-	public DoubleArgument(Builder builder) {
+	public FloatArgument(Builder builder) {
 		super(builder);
 		this.minimum = builder.minimum;
 		this.maximum = builder.maximum;
@@ -17,13 +17,13 @@ public class DoubleArgument extends FrameworkArgument<Double> {
 		return new Builder(name);
 	}
 	
-	public static Builder optional(String name, double defaultValue) {
+	public static Builder optional(String name, float defaultValue) {
 		return (Builder) new Builder(name).optional(defaultValue);
 	}
 	
 	@Override
 	public boolean test(String argument) {
-		double v = Double.parseDouble(argument);
+		float v = Float.parseFloat(argument);
 		return minimum <= v && v <= maximum;
 	}
 	
@@ -32,13 +32,13 @@ public class DoubleArgument extends FrameworkArgument<Double> {
 		return "Value of " + name + " has to be between " + minimum + " and " + maximum;
 	}
 	
-	public static class Builder extends FrameworkArgument.Builder<Double> {
+	public static class Builder extends FrameworkArgument.Builder<Float> {
 		
-		protected double minimum = Double.NEGATIVE_INFINITY;
-		protected double maximum = Double.POSITIVE_INFINITY;
+		protected float minimum = Float.NEGATIVE_INFINITY;
+		protected float maximum = Float.POSITIVE_INFINITY;
 		
 		public Builder(String name) {
-			super(name, (c, a) -> Double.parseDouble(a), (c, a) -> new ArrayList<>());
+			super(name, (c, a) -> Float.parseFloat(a), (c, a) -> new ArrayList<>());
 		}
 		
 		public Builder setDescription(String description) {
@@ -46,18 +46,18 @@ public class DoubleArgument extends FrameworkArgument<Double> {
 			return this;
 		}
 		
-		public Builder withMin(double minimum) {
+		public Builder withMin(float minimum) {
 			this.minimum = minimum;
 			return this;
 		}
 		
-		public Builder withMax(double maximum) {
+		public Builder withMax(float maximum) {
 			this.maximum = maximum;
 			return this;
 		}
 		
-		public DoubleArgument build() {
-			return new DoubleArgument(this);
+		public FloatArgument build() {
+			return new FloatArgument(this);
 		}
 		
 		@Override

@@ -53,6 +53,10 @@ public class FrameworkCommand<T extends CommandSender> {
 		return description;
 	}
 	
+	public String[] getAliases() {
+		return aliases;
+	}
+	
 	public CommandHandler getHandler() {
 		return handler;
 	}

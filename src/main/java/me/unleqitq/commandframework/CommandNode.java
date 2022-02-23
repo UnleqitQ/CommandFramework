@@ -32,6 +32,7 @@ public class CommandNode extends Command {
 		this.command = command;
 		this.parent = parent;
 		
+		setAliases(Arrays.stream(command.getAliases()).toList());
 		setDescription(command.getDescription());
 		setUsage(getStringUsage(true));
 	}
@@ -96,8 +97,10 @@ public class CommandNode extends Command {
 				if (element instanceof FrameworkFlag flag) {
 					try {
 						String current = args[i];
-						if (!("-" + flag.getName()).equalsIgnoreCase(current))
+						if (!("-" + flag.getName()).equalsIgnoreCase(current)) {
+							context.unsetFlag(flag.getName());
 							continue;
+						}
 						context.setFlag(flag.getName());
 					} catch (ArrayIndexOutOfBoundsException ignored) {
 					}
@@ -107,12 +110,20 @@ public class CommandNode extends Command {
 						try {
 							String current = args[i];
 							context.arguments.put(argument.getName(), current);
+							if (!argument.test(current)) {
+								context.sender.sendMessage("$4Wrong usage: " + argument.errorMessage());
+								return;
+							}
 						} catch (ArrayIndexOutOfBoundsException ignored) {
 						}
 					}
 					else {
 						String current = args[i];
 						context.arguments.put(argument.getName(), current);
+						if (!argument.test(current)) {
+							context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
+							return;
+						}
 					}
 				}
 				i++;
@@ -207,7 +218,7 @@ public class CommandNode extends Command {
 	
 	@Override
 	public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
-		CommandContext context = new CommandContext(sender);
+		CommandContext context = new CommandContext(sender, String.join(" ", args));
 		
 		execute(context, args);
 		return true;
@@ -216,7 +227,7 @@ public class CommandNode extends Command {
 	@Override
 	@NotNull
 	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) {
-		CommandContext context = new CommandContext(sender);
+		CommandContext context = new CommandContext(sender, String.join(" ", args));
 		
 		return tabComplete(context, args);
 	}

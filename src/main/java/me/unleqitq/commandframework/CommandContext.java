@@ -6,16 +6,19 @@ import org.bukkit.command.CommandSender;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class CommandContext implements ICommandContext {
 	
+	String rawCommand;
 	CommandNode commandNode;
 	Map<String, String> arguments = new HashMap<>();
 	Map<String, Boolean> flags = new HashMap<>();
 	CommandSender sender;
 	
-	public CommandContext(CommandSender sender) {
+	public CommandContext(CommandSender sender, String rawCommand) {
 		this.sender = sender;
+		this.rawCommand = rawCommand;
 	}
 	
 	public void setCommandNode(CommandNode commandNode) {
@@ -40,7 +43,10 @@ public class CommandContext implements ICommandContext {
 	
 	@Override
 	public <T> Optional<T> getOptional(String name) {
-		return Optional.ofNullable(get(name));
+		if (hasArgument("name"))
+			return Optional.of(get(name));
+		else
+			return Optional.empty();
 	}
 	
 	public String getStringArgument(String name) {
@@ -48,7 +54,7 @@ public class CommandContext implements ICommandContext {
 	}
 	
 	public boolean hasArgument(String name) {
-		return arguments.get(name) != null;
+		return declaredArgument(name) && arguments.get(name) != null;
 	}
 	
 	public boolean contains(String name) {
@@ -64,7 +70,7 @@ public class CommandContext implements ICommandContext {
 	}
 	
 	public boolean getFlag(String name) {
-		return flags.get(name);
+		return declaredFlag(name) && flags.get(name) != null && flags.get(name);
 	}
 	
 	public void setFlag(String name) {
@@ -77,6 +83,22 @@ public class CommandContext implements ICommandContext {
 	
 	public CommandSender getSender() {
 		return sender;
+	}
+	
+	public <T> T getOrSupplyDefault(String name, Supplier<T> supplier) {
+		return (T) getOptional(name).orElseGet(supplier);
+	}
+	
+	public <T> T getOrDefault(String name, T defaultValue) {
+		return (T) getOptional(name).orElse(defaultValue);
+	}
+	
+	public String getRawCommand() {
+		return rawCommand;
+	}
+	
+	public void unsetFlag(String name) {
+		this.flags.put(name, false);
 	}
 	
 }

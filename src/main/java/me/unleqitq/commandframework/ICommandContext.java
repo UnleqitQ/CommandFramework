@@ -3,6 +3,7 @@ package me.unleqitq.commandframework;
 import org.bukkit.command.CommandSender;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public interface ICommandContext {
 	
@@ -23,5 +24,11 @@ public interface ICommandContext {
 	boolean getFlag(String name);
 	
 	CommandSender getSender();
+	
+	String getRawCommand();
+	
+	<T> T getOrSupplyDefault(String name, Supplier<T> supplier);
+	
+	<T> T getOrDefault(String name, T defaultValue);
 	
 }
