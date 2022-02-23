@@ -21,6 +21,7 @@ public class FrameworkCommand<T extends CommandSender> {
 	protected String description;
 	protected CommandHandler handler;
 	protected String permission;
+	protected String[] aliases;
 	
 	@Nullable
 	protected FrameworkCommand<T> previous;
@@ -34,6 +35,7 @@ public class FrameworkCommand<T extends CommandSender> {
 		this.description = builder.description;
 		this.handler = builder.handler;
 		this.permission = builder.permission;
+		this.aliases = builder.aliases;
 		for (FrameworkCommandElement.Builder elementBuilder : builder.elements) {
 			elements.add(elementBuilder.build());
 		}
@@ -79,6 +81,24 @@ public class FrameworkCommand<T extends CommandSender> {
 		return new Builder<>(ConsoleCommandSender.class, name);
 	}
 	
+	public static Builder<CommandSender> commandBuilder(String name, String... aliases) {
+		Builder<CommandSender> builder = new Builder<>(CommandSender.class, name);
+		builder.aliases = aliases;
+		return builder;
+	}
+	
+	public static Builder<Player> playerCommandBuilder(String name, String... aliases) {
+		Builder<Player> builder = new Builder<>(Player.class, name);
+		builder.aliases = aliases;
+		return builder;
+	}
+	
+	public static Builder<ConsoleCommandSender> consoleCommandBuilder(String name, String... aliases) {
+		Builder<ConsoleCommandSender> builder = new Builder<>(ConsoleCommandSender.class, name);
+		builder.aliases = aliases;
+		return builder;
+	}
+	
 	public static class Builder<T extends CommandSender> {
 		
 		protected Class<T> senderClass;
@@ -89,6 +109,7 @@ public class FrameworkCommand<T extends CommandSender> {
 		protected String description = "";
 		protected CommandHandler handler = null;
 		protected String permission = null;
+		protected String[] aliases = new String[0];
 		
 		protected List<FrameworkCommandElement.Builder> elements = new ArrayList<>();
 		
