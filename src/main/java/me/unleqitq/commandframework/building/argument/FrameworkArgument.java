@@ -45,7 +45,7 @@ public abstract class FrameworkArgument<T> extends FrameworkCommandElement {
 		protected TabCompleteProvider tabCompleteProvider;
 		protected Parser<T> parser;
 		protected boolean optional;
-		T defaultValue;
+		protected T defaultValue;
 		
 		public Builder(String name, Parser<T> defaultParser, TabCompleteProvider defaultTabCompleteProvider) {
 			super(name);
@@ -79,6 +79,9 @@ public abstract class FrameworkArgument<T> extends FrameworkCommandElement {
 		}
 		
 		public abstract FrameworkArgument<T> build();
+		
+		@Override
+		public abstract FrameworkArgument.Builder<T> clone();
 		
 	}
 	

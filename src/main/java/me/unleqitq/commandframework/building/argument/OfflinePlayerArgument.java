@@ -38,6 +38,17 @@ public class OfflinePlayerArgument extends FrameworkArgument<OfflinePlayer> {
 			return new OfflinePlayerArgument(this);
 		}
 		
+		@Override
+		public Builder clone() {
+			Builder builder = new Builder(name);
+			builder.optional = this.optional;
+			builder.parser = this.parser;
+			builder.defaultValue = this.defaultValue;
+			builder.tabCompleteProvider = this.tabCompleteProvider;
+			builder.description = this.description;
+			return builder;
+		}
+		
 	}
 	
 }

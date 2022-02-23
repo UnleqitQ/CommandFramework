@@ -36,6 +36,17 @@ public class WorldArgument extends FrameworkArgument<World> {
 			return new WorldArgument(this);
 		}
 		
+		@Override
+		public Builder clone() {
+			Builder builder = new Builder(name);
+			builder.optional = this.optional;
+			builder.parser = this.parser;
+			builder.defaultValue = this.defaultValue;
+			builder.tabCompleteProvider = this.tabCompleteProvider;
+			builder.description = this.description;
+			return builder;
+		}
+		
 	}
 	
 }

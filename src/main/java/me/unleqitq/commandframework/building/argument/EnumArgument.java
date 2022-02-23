@@ -41,6 +41,17 @@ public class EnumArgument<E extends Enum<E>> extends FrameworkArgument<E> {
 			return new EnumArgument<E>(this);
 		}
 		
+		@Override
+		public Builder clone() {
+			Builder builder = new Builder(name, argumentEnum);
+			builder.optional = this.optional;
+			builder.parser = this.parser;
+			builder.defaultValue = this.defaultValue;
+			builder.tabCompleteProvider = this.tabCompleteProvider;
+			builder.description = this.description;
+			return builder;
+		}
+		
 	}
 	
 }

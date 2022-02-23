@@ -20,6 +20,7 @@ public class FrameworkCommand<T extends CommandSender> {
 	protected String name;
 	protected String description;
 	protected CommandHandler handler;
+	protected String permission;
 	
 	@Nullable
 	protected FrameworkCommand<T> previous;
@@ -32,6 +33,7 @@ public class FrameworkCommand<T extends CommandSender> {
 		this.name = builder.name;
 		this.description = builder.description;
 		this.handler = builder.handler;
+		this.permission = builder.permission;
 		for (FrameworkCommandElement.Builder elementBuilder : builder.elements) {
 			elements.add(elementBuilder.build());
 		}
@@ -86,6 +88,7 @@ public class FrameworkCommand<T extends CommandSender> {
 		protected String name;
 		protected String description = "";
 		protected CommandHandler handler = null;
+		protected String permission = null;
 		
 		protected List<FrameworkCommandElement.Builder> elements = new ArrayList<>();
 		
@@ -116,6 +119,11 @@ public class FrameworkCommand<T extends CommandSender> {
 			return this;
 		}
 		
+		public Builder<T> argument(FrameworkArgument.Builder argumentBuilder, String description) {
+			elements.add(argumentBuilder.clone().setDescription(description));
+			return this;
+		}
+		
 		public Builder<T> flag(FrameworkFlag.Builder flagBuilder) {
 			elements.add(flagBuilder);
 			return this;
@@ -123,6 +131,11 @@ public class FrameworkCommand<T extends CommandSender> {
 		
 		public Builder<T> element(FrameworkCommandElement.Builder elementBuilder) {
 			elements.add(elementBuilder);
+			return this;
+		}
+		
+		public Builder<T> permission(String permission) {
+			this.permission = permission;
 			return this;
 		}
 		
@@ -162,6 +175,16 @@ public class FrameworkCommand<T extends CommandSender> {
 		
 		public Builder<ConsoleCommandSender> subConsoleCommand(String name) {
 			return new Builder<>(this, ConsoleCommandSender.class, name);
+		}
+		
+		@Override
+		protected FrameworkCommand.Builder<T> clone() {
+			Builder<T> builder = new Builder<>(parent, senderClass, name);
+			builder.permission = permission;
+			builder.elements = elements;
+			builder.description = description;
+			builder.handler = handler;
+			return builder;
 		}
 		
 	}
