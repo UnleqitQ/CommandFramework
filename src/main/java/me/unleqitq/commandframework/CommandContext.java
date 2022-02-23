@@ -40,6 +40,10 @@ public class CommandContext implements ICommandContext {
 		return arguments.get(name) != null;
 	}
 	
+	public boolean contains(String name) {
+		return arguments.get(name) != null;
+	}
+	
 	public boolean declaredArgument(String name) {
 		return arguments.containsKey(name);
 	}
