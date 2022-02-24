@@ -2,7 +2,6 @@ package me.unleqitq.commandframework;
 
 import me.unleqitq.commandframework.building.command.FrameworkCommand;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
 import org.bukkit.plugin.Plugin;
 
 import java.util.HashMap;
@@ -24,10 +23,10 @@ public class CommandManager {
 				node = rootNodes.get(commandBuilder.getName());
 			else {
 				node = new CommandNode(plugin, commandBuilder.build(), null);
-				Command prev = Bukkit.getCommandMap().getCommand(commandBuilder.getName());
+				/*Command prev = Bukkit.getCommandMap().getCommand(commandBuilder.getName());
 				if (prev != null)
-					prev.unregister(Bukkit.getCommandMap());
-				Bukkit.getCommandMap().register("f", node);
+					prev.unregister(Bukkit.getCommandMap());*/
+				Bukkit.getCommandMap().register(node.getLabel(), plugin.getName().toLowerCase(), node);
 			}
 			rootNodes.put(commandBuilder.getName(), node);
 		}
@@ -52,10 +51,10 @@ public class CommandManager {
 				node = rootNodes.get(commandBuilder.getName());
 			else {
 				node = new CommandNode(plugin, commandBuilder.build(), null);
-				Command prev = Bukkit.getCommandMap().getCommand(commandBuilder.getName());
+				/*Command prev = Bukkit.getCommandMap().getCommand(commandBuilder.getName());
 				if (prev != null)
-					prev.unregister(Bukkit.getCommandMap());
-				Bukkit.getCommandMap().register("f", node);
+					prev.unregister(Bukkit.getCommandMap());*/
+				Bukkit.getCommandMap().register(node.getLabel(), plugin.getName().toLowerCase(), node);
 			}
 			rootNodes.put(commandBuilder.getName(), node);
 		}
