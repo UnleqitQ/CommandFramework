@@ -11,15 +11,17 @@ import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.help.GenericCommandHelpTopic;
 import org.bukkit.help.HelpTopic;
 import org.bukkit.help.IndexHelpTopic;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class CommandNode extends Command {
+public class CommandNode extends Command implements PluginIdentifiableCommand {
 	
 	@NotNull
 	private FrameworkCommand command;
@@ -28,10 +30,14 @@ public class CommandNode extends Command {
 	@Nullable
 	private CommandNode parent;
 	
-	public CommandNode(FrameworkCommand command, @Nullable CommandNode parent) {
+	@NotNull
+	private Plugin plugin;
+	
+	public CommandNode(Plugin plugin, FrameworkCommand command, @Nullable CommandNode parent) {
 		super(command.getName());
 		this.command = command;
 		this.parent = parent;
+		this.plugin = plugin;
 		
 		setAliases(Arrays.stream(command.getAliases()).toList());
 		setDescription(command.getDescription());
@@ -444,6 +450,12 @@ public class CommandNode extends Command {
 		}
 		editingCurrent[0] = false;
 		return sb.toString();
+	}
+	
+	@Override
+	@NotNull
+	public Plugin getPlugin() {
+		return plugin;
 	}
 	
 }
