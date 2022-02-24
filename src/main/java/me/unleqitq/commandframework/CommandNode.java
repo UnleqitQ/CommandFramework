@@ -96,175 +96,184 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 	}
 	
 	private void execute(CommandContext context, String[] args) {
-		context.commandNode = this;
-		int i = 0;
-		List<FrameworkCommandElement> elements = command.getElements();
-		if (command.getPermission() != null && !context.sender.hasPermission(command.getPermission())) {
-			context.sender.sendMessage(Component.text("§4You have no permission to do that!").hoverEvent(
-					HoverEvent.showText(Component.text("§4Missing Permission:\n§6" + command.getPermission()))));
-			return;
-		}
-		if (!command.getSenderClass().isAssignableFrom(context.sender.getClass())) {
-			context.sender.sendMessage(
-					"§4You can only excute this command as " + command.getSenderClass().getSimpleName());
-			return;
-		}
 		try {
-			for (FrameworkCommandElement element : elements) {
-				if (element instanceof FrameworkFlag flag) {
-					try {
-						String current = args[i];
-						if (!("-" + flag.getName()).equalsIgnoreCase(current)) {
-							context.unsetFlag(flag.getName());
-							continue;
+			context.commandNode = this;
+			int i = 0;
+			List<FrameworkCommandElement> elements = command.getElements();
+			if (command.getPermission() != null && !context.sender.hasPermission(command.getPermission())) {
+				context.sender.sendMessage(Component.text("§4You have no permission to do that!").hoverEvent(
+						HoverEvent.showText(Component.text("§4Missing Permission:\n§6" + command.getPermission()))));
+				return;
+			}
+			if (!command.getSenderClass().isAssignableFrom(context.sender.getClass())) {
+				context.sender.sendMessage(
+						"§4You can only excute this command as " + command.getSenderClass().getSimpleName());
+				return;
+			}
+			try {
+				for (FrameworkCommandElement element : elements) {
+					if (element instanceof FrameworkFlag flag) {
+						try {
+							String current = args[i];
+							if (!("-" + flag.getName()).equalsIgnoreCase(current)) {
+								context.unsetFlag(flag.getName());
+								continue;
+							}
+							context.setFlag(flag.getName());
+						} catch (ArrayIndexOutOfBoundsException ignored) {
 						}
-						context.setFlag(flag.getName());
-					} catch (ArrayIndexOutOfBoundsException ignored) {
 					}
-				}
-				else if (element instanceof FrameworkArgument<?> argument) {
-					if (argument instanceof StringArrayArgument) {
-						System.out.println("String Array");
-						if (argument.isOptional()) {
-							try {
+					else if (element instanceof FrameworkArgument<?> argument) {
+						if (argument instanceof StringArrayArgument) {
+							System.out.println("String Array");
+							if (argument.isOptional()) {
+								try {
+									String[] c = Arrays.copyOfRange(args, i, args.length);
+									String current = String.join(" ", c);
+									context.arguments.put(argument.getName(), current);
+									if (!argument.test(current)) {
+										context.sender.sendMessage("$4Wrong usage: " + argument.errorMessage());
+										return;
+									}
+								} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ignored) {
+								}
+							}
+							else {
 								String[] c = Arrays.copyOfRange(args, i, args.length);
 								String current = String.join(" ", c);
+								context.arguments.put(argument.getName(), current);
+								if (!argument.test(current)) {
+									context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
+									return;
+								}
+							}
+							i = args.length;
+							break;
+						}
+						if (argument.isOptional()) {
+							try {
+								String current = args[i];
 								context.arguments.put(argument.getName(), current);
 								if (!argument.test(current)) {
 									context.sender.sendMessage("$4Wrong usage: " + argument.errorMessage());
 									return;
 								}
-							} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ignored) {
+							} catch (ArrayIndexOutOfBoundsException ignored) {
 							}
 						}
 						else {
-							String[] c = Arrays.copyOfRange(args, i, args.length);
-							String current = String.join(" ", c);
+							String current = args[i];
 							context.arguments.put(argument.getName(), current);
 							if (!argument.test(current)) {
 								context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
 								return;
 							}
 						}
-						i = args.length;
-						break;
 					}
-					if (argument.isOptional()) {
-						try {
-							String current = args[i];
-							context.arguments.put(argument.getName(), current);
-							if (!argument.test(current)) {
-								context.sender.sendMessage("$4Wrong usage: " + argument.errorMessage());
-								return;
-							}
-						} catch (ArrayIndexOutOfBoundsException ignored) {
-						}
-					}
-					else {
-						String current = args[i];
-						context.arguments.put(argument.getName(), current);
-						if (!argument.test(current)) {
-							context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
-							return;
-						}
-					}
+					i++;
 				}
-				i++;
+			} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ignored) {
+				printPaperUsage(context.sender);
+				return;
 			}
-		} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ignored) {
-			printPaperUsage(context.sender);
-			return;
-		}
-		if (args.length > i) {
-			String current = args[i];
-			if (hasChild(current)) {
-				String[] nextArgs = Arrays.copyOfRange(args, i + 1, args.length);
-				getChild(current).execute(context, nextArgs);
+			if (args.length > i) {
+				String current = args[i];
+				if (hasChild(current)) {
+					String[] nextArgs = Arrays.copyOfRange(args, i + 1, args.length);
+					getChild(current).execute(context, nextArgs);
+				}
+				else {
+					printPaperUsage(context.sender);
+				}
 			}
 			else {
-				printPaperUsage(context.sender);
+				if (command.getHandler() == null)
+					printPaperUsage(context.sender);
+				else
+					command.getHandler().execute(context);
 			}
-		}
-		else {
-			if (command.getHandler() == null)
-				printPaperUsage(context.sender);
-			else
-				command.getHandler().execute(context);
+		} catch (Exception e) {
+			context.sender.sendMessage("§4Some Error occured: ");
+			context.sender.sendMessage("§4" + e.getMessage());
 		}
 	}
 	
 	private List<String> tabComplete(CommandContext context, String[] args) {
-		List<String> l = new ArrayList<>();
-		if (command.getPermission() != null && !context.sender.hasPermission(command.getPermission())) {
-			return l;
-		}
-		context.commandNode = this;
-		int i = 0;
-		List<FrameworkCommandElement> elements = command.getElements();
-		String startElement = null;
-		String endElement = "";
 		try {
-			for (FrameworkCommandElement element : elements) {
-				String current = args[i];
-				if (i < args.length - 1) {
-					if (element instanceof FrameworkFlag flag) {
-						if (!("-" + flag.getName()).equalsIgnoreCase(current))
-							continue;
-						context.setFlag(flag.getName());
-					}
-					else if (element instanceof FrameworkArgument<?> argument) {
-						context.arguments.put(argument.getName(), current);
-					}
-					i++;
-				}
-				else {
-					if (startElement == null)
-						startElement = element.getName();
-					endElement = element.getName();
-					if (element instanceof FrameworkFlag flag) {
-						if (("-" + flag.getName()).toLowerCase().contains(current))
-							l.add("-" + flag.getName());
-					}
-					else if (element instanceof FrameworkArgument<?> argument) {
-						l.addAll(argument.getTabCompleteProvider().tabComplete(context, current));
-						
-						try {
-							ActionBar.sendActionBar(context, startElement, endElement);
-						} catch (Exception e) {
-							e.printStackTrace();
+			List<String> l = new ArrayList<>();
+			if (command.getPermission() != null && !context.sender.hasPermission(command.getPermission())) {
+				return l;
+			}
+			context.commandNode = this;
+			int i = 0;
+			List<FrameworkCommandElement> elements = command.getElements();
+			String startElement = null;
+			String endElement = "";
+			try {
+				for (FrameworkCommandElement element : elements) {
+					String current = args[i];
+					if (i < args.length - 1) {
+						if (element instanceof FrameworkFlag flag) {
+							if (!("-" + flag.getName()).equalsIgnoreCase(current))
+								continue;
+							context.setFlag(flag.getName());
 						}
-						return l;
+						else if (element instanceof FrameworkArgument<?> argument) {
+							context.arguments.put(argument.getName(), current);
+						}
+						i++;
+					}
+					else {
+						if (startElement == null)
+							startElement = element.getName();
+						endElement = element.getName();
+						if (element instanceof FrameworkFlag flag) {
+							if (("-" + flag.getName()).toLowerCase().contains(current))
+								l.add("-" + flag.getName());
+						}
+						else if (element instanceof FrameworkArgument<?> argument) {
+							l.addAll(argument.getTabCompleteProvider().tabComplete(context, current));
+							
+							try {
+								ActionBar.sendActionBar(context, startElement, endElement);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							return l;
+						}
+					}
+				}
+			} catch (ArrayIndexOutOfBoundsException ignored) {
+			
+			}
+			String current = args[i];
+			try {
+				ActionBar.sendActionBar(context, startElement, endElement);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (args.length > i + 1) {
+				if (hasChild(current)) {
+					String[] nextArgs = Arrays.copyOfRange(args, i + 1, args.length);
+					CommandNode child = getChild(current);
+					
+					l.addAll(child.tabComplete(context, nextArgs));
+				}
+			}
+			else {
+				for (CommandNode child : children.values()) {
+					if (child.getCommandName().toLowerCase().startsWith(current)) {
+						if (child.getCommand().getPermission() == null || context.sender.hasPermission(
+								child.getCommand().getPermission()))
+							l.add(child.getCommandName());
 					}
 				}
 			}
-		} catch (ArrayIndexOutOfBoundsException ignored) {
-		
-		}
-		String current = args[i];
-		try {
-			ActionBar.sendActionBar(context, startElement, endElement);
+			
+			return l;
 		} catch (Exception e) {
-			e.printStackTrace();
+			return List.of("Housten we got a Problem");
 		}
-		if (args.length > i + 1) {
-			if (hasChild(current)) {
-				String[] nextArgs = Arrays.copyOfRange(args, i + 1, args.length);
-				CommandNode child = getChild(current);
-				
-				l.addAll(child.tabComplete(context, nextArgs));
-			}
-		}
-		else {
-			for (CommandNode child : children.values()) {
-				if (child.getCommandName().toLowerCase().startsWith(current)) {
-					if (child.getCommand().getPermission() == null || context.sender.hasPermission(
-							child.getCommand().getPermission()))
-						l.add(child.getCommandName());
-				}
-			}
-		}
-		
-		return l;
 	}
 	
 	@Override
