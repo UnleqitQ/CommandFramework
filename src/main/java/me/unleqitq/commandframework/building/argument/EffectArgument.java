@@ -30,8 +30,9 @@ public class EffectArgument extends FrameworkArgument<PotionEffectType> {
 				else {
 					return PotionEffectType.getByKey(NamespacedKey.minecraft(a.toLowerCase()));
 				}
-			}, (c, a) -> new ArrayList<>(Arrays.stream(PotionEffectType.values()).map(PotionEffectType::getKey).map(
-					NamespacedKey::asString).filter(s -> s.toLowerCase().startsWith(a.toLowerCase())).toList()));
+			}, (c, a) -> new ArrayList<>(Arrays.stream(PotionEffectType.values()).map(PotionEffectType::getKey).filter(
+					k -> k.getKey().toLowerCase().startsWith(a.toLowerCase()) || k.toString().toLowerCase().startsWith(
+							a.toLowerCase())).map(NamespacedKey::asString).toList()));
 		}
 		
 		public Builder setDescription(String description) {

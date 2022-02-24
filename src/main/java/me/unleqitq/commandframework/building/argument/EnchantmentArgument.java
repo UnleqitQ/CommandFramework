@@ -30,8 +30,10 @@ public class EnchantmentArgument extends FrameworkArgument<Enchantment> {
 				else {
 					return Enchantment.getByKey(NamespacedKey.minecraft(a.toLowerCase()));
 				}
-			}, (c, a) -> new ArrayList<>(Arrays.stream(Enchantment.values()).map(Enchantment::getKey).map(
-					NamespacedKey::asString).filter(s -> s.toLowerCase().startsWith(a.toLowerCase())).toList()));
+			}, (c, a) -> new ArrayList<>(Arrays.stream(Enchantment.values()).map(Enchantment::getKey).filter(
+					k -> k.getKey().toLowerCase().startsWith(a.toLowerCase()) || k.toString().toLowerCase().startsWith(
+							a.toLowerCase())).map(NamespacedKey::asString).filter(
+					s -> s.toLowerCase().startsWith(a.toLowerCase())).toList()));
 		}
 		
 		public Builder setDescription(String description) {
