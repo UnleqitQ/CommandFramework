@@ -22,7 +22,7 @@ public class MaterialArgument extends FrameworkArgument<Material> {
 	public static class Builder extends FrameworkArgument.Builder<Material> {
 		
 		public Builder(String name) {
-			super(name, (c, a) -> Material.getMaterial(a),
+			super(name, (c, a) -> Material.matchMaterial(a),
 					(c, a) -> Arrays.stream(Material.values()).map(Material::getKey).map(NamespacedKey::getKey).filter(
 							s -> s.toLowerCase().startsWith(a.toLowerCase())).toList());
 		}

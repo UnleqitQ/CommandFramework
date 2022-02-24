@@ -9,6 +9,7 @@ public class EnumArgument<E extends Enum<E>> extends FrameworkArgument<E> {
 	
 	public EnumArgument(Builder<E> builder) {
 		super(builder);
+		this.argumentEnum = builder.argumentEnum;
 	}
 	
 	public static <E extends Enum<E>> Builder<E> of(String name, Class<E> argumentEnum) {
@@ -25,6 +26,7 @@ public class EnumArgument<E extends Enum<E>> extends FrameworkArgument<E> {
 		
 		public Builder(String name, Class<E> argumentEnum) {
 			super(name, (c, a) -> null, (c, a) -> null);
+			this.argumentEnum = argumentEnum;
 			parser((c, a) -> Arrays.stream(Builder.this.argumentEnum.getEnumConstants()).filter(
 					e -> e.name().equalsIgnoreCase(a)).findFirst().orElse(null));
 			tabComplete((c, a) -> new ArrayList<>(

@@ -93,6 +93,11 @@ public class CommandNode extends Command {
 		context.commandNode = this;
 		int i = 0;
 		List<FrameworkCommandElement> elements = command.getElements();
+		if (command.getPermission() != null && !context.sender.hasPermission(command.getPermission())) {
+			context.sender.sendMessage(Component.text("§4You have no permission to do that!").hoverEvent(
+					HoverEvent.showText(Component.text("§4Missing Permission:\n§6" + command.getPermission()))));
+			return;
+		}
 		try {
 			for (FrameworkCommandElement element : elements) {
 				if (element instanceof FrameworkFlag flag) {
@@ -179,6 +184,9 @@ public class CommandNode extends Command {
 	
 	private List<String> tabComplete(CommandContext context, String[] args) {
 		List<String> l = new ArrayList<>();
+		if (command.getPermission() != null && !context.sender.hasPermission(command.getPermission())) {
+			return l;
+		}
 		context.commandNode = this;
 		int i = 0;
 		List<FrameworkCommandElement> elements = command.getElements();
@@ -230,13 +238,18 @@ public class CommandNode extends Command {
 		if (args.length > i + 1) {
 			if (hasChild(current)) {
 				String[] nextArgs = Arrays.copyOfRange(args, i + 1, args.length);
-				l.addAll(getChild(current).tabComplete(context, nextArgs));
+				CommandNode child = getChild(current);
+				
+				l.addAll(child.tabComplete(context, nextArgs));
 			}
 		}
 		else {
 			for (CommandNode child : children.values()) {
-				if (child.getCommandName().toLowerCase().startsWith(current))
-					l.add(child.getCommandName());
+				if (child.getCommandName().toLowerCase().startsWith(current)) {
+					if (child.getCommand().getPermission() == null || context.sender.hasPermission(
+							child.getCommand().getPermission()))
+						l.add(child.getCommandName());
+				}
 			}
 		}
 		

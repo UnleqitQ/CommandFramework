@@ -54,7 +54,7 @@ public class CommandContext implements ICommandContext {
 	}
 	
 	public boolean hasArgument(String name) {
-		return declaredArgument(name) && arguments.get(name) != null;
+		return declaredArgument(name) && get(name) != null;
 	}
 	
 	public boolean contains(String name) {
@@ -86,11 +86,17 @@ public class CommandContext implements ICommandContext {
 	}
 	
 	public <T> T getOrSupplyDefault(String name, Supplier<T> supplier) {
-		return (T) getOptional(name).orElseGet(supplier);
+		if (hasArgument(name))
+			return get(name);
+		else
+			return supplier.get();
 	}
 	
 	public <T> T getOrDefault(String name, T defaultValue) {
-		return (T) getOptional(name).orElse(defaultValue);
+		if (hasArgument(name))
+			return get(name);
+		else
+			return defaultValue;
 	}
 	
 	public String getRawCommand() {

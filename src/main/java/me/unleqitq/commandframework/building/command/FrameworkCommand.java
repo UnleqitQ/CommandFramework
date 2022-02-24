@@ -53,6 +53,10 @@ public class FrameworkCommand<T extends CommandSender> {
 		return description;
 	}
 	
+	public String getPermission() {
+		return permission;
+	}
+	
 	public String[] getAliases() {
 		return aliases;
 	}
