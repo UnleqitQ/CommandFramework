@@ -32,8 +32,7 @@ public class EnchantmentArgument extends FrameworkArgument<Enchantment> {
 				}
 			}, (c, a) -> new ArrayList<>(Arrays.stream(Enchantment.values()).map(Enchantment::getKey).filter(
 					k -> k.getKey().toLowerCase().startsWith(a.toLowerCase()) || k.toString().toLowerCase().startsWith(
-							a.toLowerCase())).map(NamespacedKey::asString).filter(
-					s -> s.toLowerCase().startsWith(a.toLowerCase())).toList()));
+							a.toLowerCase())).map(NamespacedKey::asString).toList()));
 		}
 		
 		public Builder setDescription(String description) {
