@@ -2,7 +2,6 @@ package me.unleqitq.commandframework.building.argument;
 
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.EntityType;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +24,7 @@ public class EntityTypeArgument extends FrameworkArgument<EntityType> {
 		
 		public Builder(String name) {
 			super(name, (c, a) -> EntityType.fromName(a.toLowerCase()), (c, a) -> new ArrayList<>(
-					Arrays.stream(PotionEffectType.values()).map(PotionEffectType::getKey).map(
+					Arrays.stream(EntityType.values()).filter(e -> e != EntityType.UNKNOWN).map(EntityType::getKey).map(
 							NamespacedKey::getKey).filter(s -> s.toLowerCase().startsWith(a.toLowerCase())).toList()));
 		}
 		
