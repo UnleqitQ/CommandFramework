@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class CommandManager {
 	
-	private static Map<String, CommandNode> rootNodes = new HashMap<>();
+	private Map<String, CommandNode> rootNodes = new HashMap<>();
 	private Plugin plugin;
 	
 	public CommandManager(Plugin plugin) {
