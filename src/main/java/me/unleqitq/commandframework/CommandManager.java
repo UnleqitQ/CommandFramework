@@ -4,8 +4,8 @@ import me.unleqitq.commandframework.building.command.FrameworkCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class CommandManager {
 	
@@ -77,6 +77,29 @@ public class CommandManager {
 			return;
 		}
 		Bukkit.getHelpMap().addTopic(node.getHelpTopic());
+	}
+	
+	public Set<CommandNode> getCommandNodes() {
+		Queue<CommandNode> checkNodes = new ConcurrentLinkedQueue<>();
+		Set<CommandNode> nodes = new HashSet<>();
+		checkNodes.addAll(rootNodes.values());
+		nodes.addAll(rootNodes.values());
+		while (!checkNodes.isEmpty()) {
+			CommandNode node = checkNodes.poll();
+			for (CommandNode child : node.getChildren().values()) {
+				checkNodes.add(child);
+				nodes.add(child);
+			}
+		}
+		return Collections.unmodifiableSet(nodes);
+	}
+	
+	public Map<String, CommandNode> getRootNodes() {
+		return Collections.unmodifiableMap(rootNodes);
+	}
+	
+	public Plugin getPlugin() {
+		return plugin;
 	}
 	
 }

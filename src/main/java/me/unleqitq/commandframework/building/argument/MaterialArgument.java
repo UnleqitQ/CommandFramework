@@ -80,7 +80,7 @@ public class MaterialArgument extends FrameworkArgument<Material> {
 				String[] ns = n.split("_");
 				String[] args = currentArgument.split("_");
 				return Arrays.stream(args).allMatch(a -> Arrays.stream(ns).anyMatch(
-						n0 -> n0.toLowerCase().replaceAll("_", "").startsWith(n0.toLowerCase().replaceAll("_", ""))));
+						n0 -> n0.toLowerCase().replaceAll("_", "").startsWith(a.toLowerCase().replaceAll("_", ""))));
 			}).map(Material::getKey).map(NamespacedKey::getKey).toList();
 		}
 		
