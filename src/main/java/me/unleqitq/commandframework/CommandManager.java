@@ -2,6 +2,7 @@ package me.unleqitq.commandframework;
 
 import me.unleqitq.commandframework.building.command.FrameworkCommand;
 import org.bukkit.Bukkit;
+import org.bukkit.help.HelpTopic;
 import org.bukkit.plugin.Plugin;
 
 import java.util.*;
@@ -76,7 +77,26 @@ public class CommandManager {
 			updateHelp(node.getParent());
 			return;
 		}
-		Bukkit.getHelpMap().addTopic(node.getHelpTopic());
+		HelpTopic topic = node.getHelpTopic();
+		Bukkit.getHelpMap().addTopic(topic);
+		/*IndexHelpTopic pluginTopic = ((IndexHelpTopic) Bukkit.getHelpMap().getHelpTopic(plugin.getName()));
+		Class<? extends IndexHelpTopic> cls = pluginTopic.getClass();
+		try {
+			/*System.out.println(String.join(", ",
+					Arrays.stream(cls.getDeclaredFields()).map(Field::getName).toArray(v -> new String[v])));/
+		Field field = Arrays.stream(cls.getDeclaredFields()).filter(
+				f -> f.getName().equalsIgnoreCase("allTopics")).findFirst().orElse(null);
+		if (field == null)
+			return;
+		field.setAccessible(true);
+		Collection<HelpTopic> topics = (Collection<HelpTopic>) field.get(pluginTopic);
+		topics.add(topic);
+	} catch(
+	IllegalAccessException e)
+	
+	{
+		e.printStackTrace();
+	}*/
 	}
 	
 	public Set<CommandNode> getCommandNodes() {

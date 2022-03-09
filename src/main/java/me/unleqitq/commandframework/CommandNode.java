@@ -14,7 +14,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.help.GenericCommandHelpTopic;
 import org.bukkit.help.HelpTopic;
-import org.bukkit.help.IndexHelpTopic;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,21 +39,32 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 		this.plugin = plugin;
 		
 		setAliases(Arrays.stream(command.getAliases()).toList());
-		setDescription(command.getDescription());
 		setUsage(getStringUsage(true));
+		setDescription(command.getDescription());
 	}
 	
 	public HelpTopic getHelpTopic() {
-		if (children.values().size() == 0) {
-			return new GenericCommandHelpTopic(this);
+		StringBuilder sb = new StringBuilder();
+		sb.append("§6Description: §r");
+		sb.append(command.getDescription());
+		sb.append('\n');
+		sb.append("§6Usage: §r");
+		sb.append(getStringUsage(true));
+		sb.append('\n');
+		sb.append("§6Aliases: §r");
+		sb.append(getAliases().size() == 0 ? "§4----" : String.join(", ", getAliases()));
+		for (CommandNode child : children.values()) {
+			sb.append('\n');
+			sb.append("§6");
+			sb.append(child.getCommandName());
+			sb.append("(§r");
+			sb.append(child.getStringUsage(true));
+			sb.append("§6): §r");
+			sb.append(child.command.getDescription());
 		}
-		else {
-			Set<HelpTopic> helpTopics = new HashSet<>();
-			for (CommandNode child : children.values()) {
-				helpTopics.add(child.getHelpTopic());
-			}
-			return new IndexHelpTopic(getCommandName(), command.getDescription(), getPermission(), helpTopics);
-		}
+		HelpTopic h = new GenericCommandHelpTopic(this);
+		h.amendTopic(command.getDescription(), sb.toString());
+		return h;
 	}
 	
 	public FrameworkCommand getCommand() {
@@ -181,6 +191,104 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 				if (hasChild(current)) {
 					String[] nextArgs = Arrays.copyOfRange(args, i + 1, args.length);
 					getChild(current).execute(context, nextArgs);
+				}
+				else {
+					printPaperUsage(context.sender);
+				}
+			}
+			else {
+				if (command.getHandler() == null)
+					printPaperUsage(context.sender);
+				else
+					command.getHandler().execute(context);
+			}
+		} catch (Exception e) {
+			context.sender.sendMessage("§4Some Error occured: ");
+			context.sender.sendMessage("§4" + e.getMessage());
+		}
+	}
+	
+	private void executeIgnorePerms(CommandContext context, String[] args) {
+		try {
+			context.commandNode = this;
+			int i = 0;
+			List<FrameworkCommandElement> elements = command.getElements();
+			if (!command.getSenderClass().isAssignableFrom(context.sender.getClass())) {
+				context.sender.sendMessage(
+						"§4You can only excute this command as " + command.getSenderClass().getSimpleName());
+				return;
+			}
+			try {
+				for (FrameworkCommandElement element : elements) {
+					if (element instanceof FrameworkFlag flag) {
+						try {
+							String current = args[i];
+							if (!("-" + flag.getName()).equalsIgnoreCase(current)) {
+								context.unsetFlag(flag.getName());
+								continue;
+							}
+							context.setFlag(flag.getName());
+						} catch (ArrayIndexOutOfBoundsException ignored) {
+						}
+					}
+					else if (element instanceof FrameworkArgument<?> argument) {
+						if (argument instanceof StringArrayArgument) {
+							System.out.println("String Array");
+							if (argument.isOptional()) {
+								try {
+									String[] c = Arrays.copyOfRange(args, i, args.length);
+									String current = String.join(" ", c);
+									context.arguments.put(argument.getName(), current);
+									if (!argument.test(current)) {
+										context.sender.sendMessage("$4Wrong usage: " + argument.errorMessage());
+										return;
+									}
+								} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ignored) {
+								}
+							}
+							else {
+								String[] c = Arrays.copyOfRange(args, i, args.length);
+								String current = String.join(" ", c);
+								context.arguments.put(argument.getName(), current);
+								if (!argument.test(current)) {
+									context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
+									return;
+								}
+							}
+							i = args.length;
+							break;
+						}
+						if (argument.isOptional()) {
+							try {
+								String current = args[i];
+								context.arguments.put(argument.getName(), current);
+								if (!argument.test(current)) {
+									context.sender.sendMessage("$4Wrong usage: " + argument.errorMessage());
+									return;
+								}
+							} catch (ArrayIndexOutOfBoundsException ignored) {
+							}
+						}
+						else {
+							String current = args[i];
+							context.arguments.put(argument.getName(), current);
+							if (!argument.test(current)) {
+								context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
+								return;
+							}
+						}
+					}
+					i++;
+				}
+			} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ignored) {
+				printPaperUsage(context.sender);
+				return;
+			}
+			if (args.length > i) {
+				String current = args[i];
+				if (hasChild(current)) {
+					String[] nextArgs = Arrays.copyOfRange(args, i + 1, args.length);
+					getChild(current).executeIgnorePerms(context, nextArgs);
 				}
 				else {
 					printPaperUsage(context.sender);
@@ -367,12 +475,16 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 		}
 		if (children.size() > 0 && last) {
 			sb.append(" ");
-			Iterator<CommandNode> iterator = children.values().iterator();
+			for (CommandNode child : children.values()) {
+				sb.append(child.getCommandName());
+				sb.append(" | ");
+			}
+			/*Iterator<CommandNode> iterator = children.values().iterator();
 			while (iterator.hasNext()) {
 				CommandNode child = iterator.next();
 				sb.append(child.getCommandName());
 				sb.append(" | ");
-			}
+			}*/
 		}
 		return sb.toString();
 	}
