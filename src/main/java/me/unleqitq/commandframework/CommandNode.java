@@ -105,7 +105,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 		return argumentMap;
 	}
 	
-	private void execute(CommandContext context, String[] args) {
+	public void execute(CommandContext context, String[] args) {
 		try {
 			context.commandNode = this;
 			int i = 0;
@@ -208,7 +208,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 		}
 	}
 	
-	private void executeIgnorePerms(CommandContext context, String[] args) {
+	public void executeIgnorePerms(CommandContext context, String[] args) {
 		try {
 			context.commandNode = this;
 			int i = 0;
