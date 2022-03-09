@@ -135,7 +135,6 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 					}
 					else if (element instanceof FrameworkArgument<?> argument) {
 						if (argument instanceof StringArrayArgument) {
-							System.out.println("String Array");
 							if (argument.isOptional()) {
 								try {
 									String[] c = Arrays.copyOfRange(args, i, args.length);
@@ -203,8 +202,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 					command.getHandler().execute(context);
 			}
 		} catch (Exception e) {
-			context.sender.sendMessage("§4Some Error occured: ");
-			context.sender.sendMessage("§4" + e.getMessage());
+			context.sender.sendMessage("§4Some Error occured");
+			//context.sender.sendMessage("§4" + e.getMessage());
 		}
 	}
 	
@@ -301,8 +300,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 					command.getHandler().execute(context);
 			}
 		} catch (Exception e) {
-			context.sender.sendMessage("§4Some Error occured: ");
-			context.sender.sendMessage("§4" + e.getMessage());
+			context.sender.sendMessage("§4Some Error occured");
+			//context.sender.sendMessage("§4" + e.getMessage());
 		}
 	}
 	
