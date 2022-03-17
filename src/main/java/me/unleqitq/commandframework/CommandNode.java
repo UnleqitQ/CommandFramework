@@ -8,6 +8,7 @@ import me.unleqitq.commandframework.building.flag.FrameworkFlag;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.HoverEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.logging.Level;
 
 public class CommandNode extends Command implements PluginIdentifiableCommand {
 	
@@ -41,6 +43,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 		setAliases(Arrays.stream(command.getAliases()).toList());
 		setUsage(getStringUsage(true));
 		setDescription(command.getDescription());
+		setPermission(command.getPermission());
 	}
 	
 	public HelpTopic getHelpTopic() {
@@ -203,12 +206,15 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 			}
 		} catch (Exception e) {
 			context.sender.sendMessage("§4Some Error occured");
+			Bukkit.getLogger().log(Level.INFO, e.getMessage(), e);
 			//context.sender.sendMessage("§4" + e.getMessage());
 		}
 	}
 	
 	public void executeIgnorePerms(CommandContext context, String[] args) {
 		try {
+			Bukkit.getLogger().info(
+					"Executed \"" + command.getName() + " " + String.join(" ", args) + "\"\nwith " + context);
 			context.commandNode = this;
 			int i = 0;
 			List<FrameworkCommandElement> elements = command.getElements();
