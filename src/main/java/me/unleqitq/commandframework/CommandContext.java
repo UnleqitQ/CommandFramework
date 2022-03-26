@@ -107,4 +107,10 @@ public class CommandContext implements ICommandContext {
 		this.flags.put(name, false);
 	}
 	
+	@Override
+	public String toString() {
+		return String.format("CommandContext{RawCommand=%s\nSender=%s\nArguments=%s\nFlags=%s}", rawCommand, sender,
+				arguments, flags);
+	}
+	
 }

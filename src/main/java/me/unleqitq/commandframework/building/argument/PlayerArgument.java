@@ -1,5 +1,6 @@
 package me.unleqitq.commandframework.building.argument;
 
+import me.unleqitq.commandframework.CommandFramework;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -23,7 +24,8 @@ public class PlayerArgument extends FrameworkArgument<Player> {
 		
 		public Builder(String name) {
 			super(name, (c, a) -> Bukkit.getPlayer(a), (c, a) -> new ArrayList<>(
-					Bukkit.getOnlinePlayers().stream().map(Player::getName).filter(
+					Bukkit.getOnlinePlayers().stream().filter(p -> !CommandFramework.isVanished(p)).map(
+							Player::getName).filter(
 							s -> s.toLowerCase().startsWith(a.toLowerCase())).toList()));
 		}
 		

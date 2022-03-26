@@ -4,3 +4,6 @@ main: me.unleqitq.commandframework.CommandFramework
 api-version: 1.18
 load: STARTUP
 authors: [UnleqitQ]
+softdepend:
+  - SuperVanish
+  - PremiumVanish
