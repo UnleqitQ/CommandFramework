@@ -28,6 +28,7 @@ public class PlayerArgument extends FrameworkArgument<Player> {
 			return false;
 		if (!check.test(c, argument))
 			c.getSender().sendMessage("§4Wrong usage: " + errorMessage());
+		return true;
 	}
 	
 	public static class Builder extends FrameworkArgument.Builder<Player> {
