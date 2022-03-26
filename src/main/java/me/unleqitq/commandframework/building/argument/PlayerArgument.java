@@ -1,6 +1,7 @@
 package me.unleqitq.commandframework.building.argument;
 
 import me.unleqitq.commandframework.CommandFramework;
+import me.unleqitq.commandframework.ICommandContext;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -19,6 +20,14 @@ public class PlayerArgument extends FrameworkArgument<Player> {
 	
 	public static Builder optional(String name, Player defaultValue) {
 		return (Builder) new Builder(name).optional(defaultValue);
+	}
+	
+	@Override
+	public boolean test(ICommandContext c, String argument) {
+		if (Bukkit.getPlayer(argument) == null)
+			return false;
+		if (!check.test(c, argument))
+			c.getSender().sendMessage("§4Wrong usage: " + errorMessage());
 	}
 	
 	public static class Builder extends FrameworkArgument.Builder<Player> {
