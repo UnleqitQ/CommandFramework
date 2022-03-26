@@ -1,5 +1,8 @@
 package me.unleqitq.commandframework.building.argument;
 
+import me.unleqitq.commandframework.CommandContext;
+import me.unleqitq.commandframework.ICommandContext;
+
 import java.util.ArrayList;
 
 public class DoubleArgument extends FrameworkArgument<Double> {
@@ -22,7 +25,7 @@ public class DoubleArgument extends FrameworkArgument<Double> {
 	}
 	
 	@Override
-	public boolean test(String argument) {
+	public boolean test(ICommandContext context, String argument) {
 		double v = Double.parseDouble(argument);
 		return minimum <= v && v <= maximum;
 	}

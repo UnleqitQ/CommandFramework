@@ -1,5 +1,7 @@
 package me.unleqitq.commandframework.building.argument;
 
+import me.unleqitq.commandframework.ICommandContext;
+
 import java.util.ArrayList;
 
 public class FloatArgument extends FrameworkArgument<Float> {
@@ -22,7 +24,7 @@ public class FloatArgument extends FrameworkArgument<Float> {
 	}
 	
 	@Override
-	public boolean test(String argument) {
+	public boolean test(ICommandContext context, String argument) {
 		float v = Float.parseFloat(argument);
 		return minimum <= v && v <= maximum;
 	}

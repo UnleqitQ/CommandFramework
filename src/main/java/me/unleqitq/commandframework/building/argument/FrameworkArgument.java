@@ -1,9 +1,12 @@
 package me.unleqitq.commandframework.building.argument;
 
+import me.unleqitq.commandframework.CommandContext;
 import me.unleqitq.commandframework.ICommandContext;
 import me.unleqitq.commandframework.building.FrameworkCommandElement;
 
 import java.util.List;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 public abstract class FrameworkArgument<T> extends FrameworkCommandElement {
 	
@@ -11,6 +14,8 @@ public abstract class FrameworkArgument<T> extends FrameworkCommandElement {
 	protected Parser<T> parser;
 	protected boolean optional;
 	protected T defaultValue;
+	protected BiPredicate<ICommandContext, String> check;
+	protected String errorMessage;
 	
 	public FrameworkArgument(Builder<T> builder) {
 		super(builder);
@@ -18,6 +23,8 @@ public abstract class FrameworkArgument<T> extends FrameworkCommandElement {
 		this.parser = builder.parser;
 		this.optional = builder.optional;
 		this.defaultValue = builder.defaultValue;
+		this.check = builder.check;
+		this.errorMessage = builder.errorMessage;
 	}
 	
 	public TabCompleteProvider getTabCompleteProvider() {
@@ -40,12 +47,12 @@ public abstract class FrameworkArgument<T> extends FrameworkCommandElement {
 		this.optional = true;
 	}
 	
-	public boolean test(String argument) {
-		return true;
+	public boolean test(ICommandContext c, String argument) {
+		return check.test(c, argument);
 	}
 	
 	public String errorMessage() {
-		return "Wrong argument";
+		return errorMessage;
 	}
 	
 	public static abstract class Builder<T> extends FrameworkCommandElement.Builder {
@@ -54,6 +61,8 @@ public abstract class FrameworkArgument<T> extends FrameworkCommandElement {
 		protected Parser<T> parser;
 		protected boolean optional;
 		protected T defaultValue;
+		protected BiPredicate<ICommandContext, String> check = (u, v) -> true;
+		protected String errorMessage = "Wrong argument";
 		
 		public Builder(String name, Parser<T> defaultParser, TabCompleteProvider defaultTabCompleteProvider) {
 			super(name);
@@ -88,6 +97,14 @@ public abstract class FrameworkArgument<T> extends FrameworkCommandElement {
 		
 		public Builder<T> optional() {
 			return optional(null);
+		}
+		
+		public void check(BiPredicate<ICommandContext, String> predicate) {
+			this.check = predicate;
+		}
+		
+		public void errorMessage(String message) {
+			this.errorMessage = message;
 		}
 		
 		public abstract FrameworkArgument<T> build();

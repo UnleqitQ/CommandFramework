@@ -143,7 +143,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 									String[] c = Arrays.copyOfRange(args, i, args.length);
 									String current = String.join(" ", c);
 									context.arguments.put(argument.getName(), current);
-									if (!argument.test(current)) {
+									if (!argument.test(context, current)) {
 										context.sender.sendMessage("$4Wrong usage: " + argument.errorMessage());
 										return;
 									}
@@ -154,7 +154,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 								String[] c = Arrays.copyOfRange(args, i, args.length);
 								String current = String.join(" ", c);
 								context.arguments.put(argument.getName(), current);
-								if (!argument.test(current)) {
+								if (!argument.test(context, current)) {
 									context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
 									return;
 								}
@@ -166,7 +166,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 							try {
 								String current = args[i];
 								context.arguments.put(argument.getName(), current);
-								if (!argument.test(current)) {
+								if (!argument.test(context, current)) {
 									context.sender.sendMessage("$4Wrong usage: " + argument.errorMessage());
 									return;
 								}
@@ -176,7 +176,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 						else {
 							String current = args[i];
 							context.arguments.put(argument.getName(), current);
-							if (!argument.test(current)) {
+							if (!argument.test(context, current)) {
 								context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
 								return;
 							}
@@ -244,7 +244,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 									String[] c = Arrays.copyOfRange(args, i, args.length);
 									String current = String.join(" ", c);
 									context.arguments.put(argument.getName(), current);
-									if (!argument.test(current)) {
+									if (!argument.test(context, current)) {
 										context.sender.sendMessage("$4Wrong usage: " + argument.errorMessage());
 										return;
 									}
@@ -255,7 +255,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 								String[] c = Arrays.copyOfRange(args, i, args.length);
 								String current = String.join(" ", c);
 								context.arguments.put(argument.getName(), current);
-								if (!argument.test(current)) {
+								if (!argument.test(context, current)) {
 									context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
 									return;
 								}
@@ -267,7 +267,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 							try {
 								String current = args[i];
 								context.arguments.put(argument.getName(), current);
-								if (!argument.test(current)) {
+								if (!argument.test(context, current)) {
 									context.sender.sendMessage("$4Wrong usage: " + argument.errorMessage());
 									return;
 								}
@@ -277,7 +277,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 						else {
 							String current = args[i];
 							context.arguments.put(argument.getName(), current);
-							if (!argument.test(current)) {
+							if (!argument.test(context, current)) {
 								context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
 								return;
 							}

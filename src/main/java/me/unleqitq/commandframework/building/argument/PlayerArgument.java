@@ -2,6 +2,7 @@ package me.unleqitq.commandframework.building.argument;
 
 import me.unleqitq.commandframework.CommandFramework;
 import org.bukkit.Bukkit;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -23,10 +24,21 @@ public class PlayerArgument extends FrameworkArgument<Player> {
 	public static class Builder extends FrameworkArgument.Builder<Player> {
 		
 		public Builder(String name) {
-			super(name, (c, a) -> Bukkit.getPlayer(a), (c, a) -> new ArrayList<>(
-					Bukkit.getOnlinePlayers().stream().filter(p -> !CommandFramework.isVanished(p)).map(
-							Player::getName).filter(
-							s -> s.toLowerCase().startsWith(a.toLowerCase())).toList()));
+			super(name, (c, a) -> Bukkit.getPlayer(a),
+					(c, a) -> new ArrayList<>(Bukkit.getOnlinePlayers().stream().filter(p -> {
+						if (c.getSender() instanceof ConsoleCommandSender)
+							return true;
+						return !CommandFramework.isVanished((Player) c.getSender(), p);
+					}).map(Player::getName).filter(s -> s.toLowerCase().startsWith(a.toLowerCase())).toList()));
+			errorMessage("Player is not online");
+			check((c, a) -> {
+				Player p = Bukkit.getPlayer(a);
+				if (p == null)
+					return false;
+				if (c.getSender() instanceof ConsoleCommandSender)
+					return true;
+				return !CommandFramework.isVanished((Player) c.getSender(), p);
+			});
 		}
 		
 		public Builder setDescription(String description) {

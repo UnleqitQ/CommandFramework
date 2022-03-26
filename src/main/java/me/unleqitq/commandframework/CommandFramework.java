@@ -27,4 +27,13 @@ public final class CommandFramework extends JavaPlugin {
 		return player.isInvisible();
 	}
 	
+	public static boolean isVanished(Player viewer, Player player) {
+		if (Bukkit.getPluginManager().isPluginEnabled("SuperVanish") || Bukkit.getPluginManager().isPluginEnabled(
+				"PremiumVanish")) {
+			if (VanishAPI.isInvisible(player))
+				return !VanishAPI.canSee(viewer, player);
+		}
+		return player.isInvisible();
+	}
+	
 }
