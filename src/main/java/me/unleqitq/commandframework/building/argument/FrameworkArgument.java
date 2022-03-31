@@ -1,12 +1,10 @@
 package me.unleqitq.commandframework.building.argument;
 
-import me.unleqitq.commandframework.CommandContext;
 import me.unleqitq.commandframework.ICommandContext;
 import me.unleqitq.commandframework.building.FrameworkCommandElement;
 
 import java.util.List;
 import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 
 public abstract class FrameworkArgument<T> extends FrameworkCommandElement {
 	

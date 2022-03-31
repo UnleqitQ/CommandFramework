@@ -114,8 +114,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 			int i = 0;
 			List<FrameworkCommandElement> elements = command.getElements();
 			if (command.getPermission() != null && !context.sender.hasPermission(command.getPermission())) {
-				context.sender.sendMessage(Component.text("§4You have no permission to do that!").hoverEvent(
-						HoverEvent.showText(Component.text("§4Missing Permission:\n§6" + command.getPermission()))));
+				CommandUtils.printMissingPermission(context.getSender(), command.getPermission());
 				return;
 			}
 			if (!command.getSenderClass().isAssignableFrom(context.sender.getClass())) {
