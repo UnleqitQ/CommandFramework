@@ -33,7 +33,7 @@ public final class CommandFramework extends JavaPlugin {
 			if (VanishAPI.isInvisible(player))
 				return !VanishAPI.canSee(viewer, player);
 		}
-		return player.isInvisible();
+		return !viewer.canSee(player);
 	}
 	
 }

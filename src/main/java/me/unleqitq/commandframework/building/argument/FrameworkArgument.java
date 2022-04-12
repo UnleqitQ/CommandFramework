@@ -93,6 +93,7 @@ public abstract class FrameworkArgument<T> extends FrameworkCommandElement {
 			return this;
 		}
 		
+		
 		public Builder<T> optional() {
 			return optional(null);
 		}

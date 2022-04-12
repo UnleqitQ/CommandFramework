@@ -10,9 +10,11 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Statistic;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
+import org.bukkit.entity.Player;
 import org.bukkit.help.GenericCommandHelpTopic;
 import org.bukkit.help.HelpTopic;
 import org.bukkit.plugin.Plugin;
@@ -20,9 +22,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 
 public class CommandNode extends Command implements PluginIdentifiableCommand {
+	
+	private ConcurrentMap<UUID, Integer> useMap = new ConcurrentHashMap<>();
 	
 	@NotNull
 	private FrameworkCommand command;
@@ -108,19 +114,38 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 		return argumentMap;
 	}
 	
-	public void execute(CommandContext context, String[] args) {
+	public boolean execute(CommandContext context, String[] args) {
 		try {
 			context.commandNode = this;
 			int i = 0;
 			List<FrameworkCommandElement> elements = command.getElements();
 			if (command.getPermission() != null && !context.sender.hasPermission(command.getPermission())) {
 				CommandUtils.printMissingPermission(context.getSender(), command.getPermission());
-				return;
+				return false;
 			}
 			if (!command.getSenderClass().isAssignableFrom(context.sender.getClass())) {
 				context.sender.sendMessage(
 						"§4You can only excute this command as " + command.getSenderClass().getSimpleName());
-				return;
+				return false;
+			}
+			if (context.getSender() instanceof Player sender && command.getCooldown() > 0) {
+				if (!sender.hasPermission(command.getCooldownBypassPermission()) && sender.getStatistic(
+						Statistic.PLAY_ONE_MINUTE) - useMap.getOrDefault(sender.getUniqueId(),
+						0) < command.getCooldown()) {
+					int sec = (command.getCooldown() - sender.getStatistic(
+							Statistic.PLAY_ONE_MINUTE) + useMap.getOrDefault(sender.getUniqueId(), 0)) / 20;
+					int min = sec / 60;
+					int hour = min / 60;
+					String s = "";
+					if (hour > 0)
+						s += hour + "h ";
+					if (min % 60 > 0)
+						s += min % 60 + "m ";
+					if (sec == 0 || sec % 60 > 0)
+						s += sec % 60 + "s ";
+					sender.sendMessage(String.format(command.getCooldownMessage(), s));
+					return false;
+				}
 			}
 			try {
 				for (FrameworkCommandElement element : elements) {
@@ -144,7 +169,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 									context.arguments.put(argument.getName(), current);
 									if (!argument.test(context, current)) {
 										context.sender.sendMessage("$4Wrong usage: " + argument.errorMessage());
-										return;
+										return false;
 									}
 								} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ignored) {
 								}
@@ -155,7 +180,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 								context.arguments.put(argument.getName(), current);
 								if (!argument.test(context, current)) {
 									context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
-									return;
+									return false;
 								}
 							}
 							i = args.length;
@@ -167,7 +192,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 								context.arguments.put(argument.getName(), current);
 								if (!argument.test(context, current)) {
 									context.sender.sendMessage("$4Wrong usage: " + argument.errorMessage());
-									return;
+									return false;
 								}
 							} catch (ArrayIndexOutOfBoundsException ignored) {
 							}
@@ -177,7 +202,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 							context.arguments.put(argument.getName(), current);
 							if (!argument.test(context, current)) {
 								context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
-								return;
+								return false;
 							}
 						}
 					}
@@ -185,13 +210,16 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 				}
 			} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ignored) {
 				printPaperUsage(context.sender);
-				return;
+				return false;
 			}
 			if (args.length > i) {
 				String current = args[i];
 				if (hasChild(current)) {
 					String[] nextArgs = Arrays.copyOfRange(args, i + 1, args.length);
-					getChild(current).execute(context, nextArgs);
+					boolean flag = getChild(current).execute(context, nextArgs);
+					if (flag && command.getCooldown() > 0 && context.getSender() instanceof Player sender && !sender.hasPermission(
+							command.getCooldownBypassPermission()))
+						useMap.put(sender.getUniqueId(), sender.getStatistic(Statistic.PLAY_ONE_MINUTE));
 				}
 				else {
 					printPaperUsage(context.sender);
@@ -200,14 +228,19 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 			else {
 				if (command.getHandler() == null)
 					printPaperUsage(context.sender);
-				else
-					command.getHandler().execute(context);
+				else {
+					boolean flag = command.getHandler().execute(context);
+					if (flag && command.getCooldown() > 0 && context.getSender() instanceof Player sender && !sender.hasPermission(
+							command.getCooldownBypassPermission()))
+						useMap.put(sender.getUniqueId(), sender.getStatistic(Statistic.PLAY_ONE_MINUTE));
+				}
 			}
 		} catch (Exception e) {
 			context.sender.sendMessage("§4Some Error occured");
 			Bukkit.getLogger().log(Level.INFO, e.getMessage(), e);
 			//context.sender.sendMessage("§4" + e.getMessage());
 		}
+		return false;
 	}
 	
 	public void executeIgnorePerms(CommandContext context, String[] args) {

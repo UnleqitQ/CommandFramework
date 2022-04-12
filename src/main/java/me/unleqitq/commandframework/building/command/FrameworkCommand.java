@@ -22,6 +22,9 @@ public class FrameworkCommand<T extends CommandSender> {
 	protected CommandHandler handler;
 	protected String permission;
 	protected String[] aliases;
+	protected String cooldownMessage = "You have to wait %s until you can use this again.";
+	protected int cooldown = -1;
+	protected String cooldownBypassPermission = "";
 	
 	@Nullable
 	protected FrameworkCommand<T> previous;
@@ -36,6 +39,9 @@ public class FrameworkCommand<T extends CommandSender> {
 		this.handler = builder.handler;
 		this.permission = builder.permission;
 		this.aliases = builder.aliases;
+		this.cooldown = builder.cooldown;
+		this.cooldownBypassPermission = builder.cooldownBypassPermission;
+		this.cooldownMessage = builder.cooldownMessage;
 		for (FrameworkCommandElement.Builder elementBuilder : builder.elements) {
 			elements.add(elementBuilder.build());
 		}
@@ -71,6 +77,18 @@ public class FrameworkCommand<T extends CommandSender> {
 	
 	public List<FrameworkCommandElement> getElements() {
 		return elements;
+	}
+	
+	public int getCooldown() {
+		return cooldown;
+	}
+	
+	public String getCooldownBypassPermission() {
+		return cooldownBypassPermission;
+	}
+	
+	public String getCooldownMessage() {
+		return cooldownMessage;
 	}
 	
 	public Builder<T> getBuilder() {
@@ -118,6 +136,9 @@ public class FrameworkCommand<T extends CommandSender> {
 		protected CommandHandler handler = null;
 		protected String permission = null;
 		protected String[] aliases = new String[0];
+		protected String cooldownMessage = "You have to wait %s until you can use this again.";
+		protected int cooldown = -1;
+		protected String cooldownBypassPermission = "";
 		
 		protected List<FrameworkCommandElement.Builder> elements = new ArrayList<>();
 		
@@ -177,6 +198,17 @@ public class FrameworkCommand<T extends CommandSender> {
 			return senderClass;
 		}
 		
+		public Builder<T> cooldown(int cooldown, String cooldownBypassPermission) {
+			this.cooldown = cooldown;
+			this.cooldownBypassPermission = cooldownBypassPermission;
+			return this;
+		}
+		
+		public Builder<T> cooldownMessage(String cooldownMessage) {
+			this.cooldownMessage = cooldownMessage;
+			return this;
+		}
+		
 		@Nullable
 		public Builder getParent() {
 			return parent;
@@ -221,7 +253,7 @@ public class FrameworkCommand<T extends CommandSender> {
 	@FunctionalInterface
 	public interface CommandHandler {
 		
-		void execute(ICommandContext context);
+		boolean execute(ICommandContext context);
 		
 	}
 	
