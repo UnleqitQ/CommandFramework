@@ -220,6 +220,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 					if (flag && command.getCooldown() > 0 && context.getSender() instanceof Player sender && !sender.hasPermission(
 							command.getCooldownBypassPermission()))
 						useMap.put(sender.getUniqueId(), sender.getStatistic(Statistic.PLAY_ONE_MINUTE));
+					return flag;
 				}
 				else {
 					printPaperUsage(context.sender);
@@ -233,6 +234,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 					if (flag && command.getCooldown() > 0 && context.getSender() instanceof Player sender && !sender.hasPermission(
 							command.getCooldownBypassPermission()))
 						useMap.put(sender.getUniqueId(), sender.getStatistic(Statistic.PLAY_ONE_MINUTE));
+					return flag;
 				}
 			}
 		} catch (Exception e) {
