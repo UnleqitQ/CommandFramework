@@ -1,10 +1,10 @@
 package me.unleqitq.commandframework.building.argument;
 
+import me.unleqitq.commandframework.utils.EffectUtils;
 import org.bukkit.NamespacedKey;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class EffectArgument extends FrameworkArgument<PotionEffectType> {
 	
@@ -30,7 +30,7 @@ public class EffectArgument extends FrameworkArgument<PotionEffectType> {
 				else {
 					return PotionEffectType.getByKey(NamespacedKey.minecraft(a.toLowerCase()));
 				}
-			}, (c, a) -> new ArrayList<>(Arrays.stream(PotionEffectType.values()).map(PotionEffectType::getKey).filter(
+			}, (c, a) -> new ArrayList<>(EffectUtils.getEffectTypes().stream().map(PotionEffectType::getKey).filter(
 					k -> k.getKey().toLowerCase().startsWith(a.toLowerCase()) || k.toString().toLowerCase().startsWith(
 							a.toLowerCase())).map(NamespacedKey::asString).toList()));
 		}
