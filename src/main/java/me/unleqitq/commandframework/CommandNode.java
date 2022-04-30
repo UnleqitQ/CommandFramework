@@ -94,11 +94,20 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 	
 	@Nullable
 	public CommandNode getChild(String name) {
-		return children.get(name);
+		if (children.containsKey(name))
+			return children.get(name);
+		return children.values().stream().sorted(
+				(s1, s2) -> String.CASE_INSENSITIVE_ORDER.compare(s1.getCommandName(), s2.getCommandName())).filter(
+				n -> n.getName().equalsIgnoreCase(name) || n.getAliases().stream().anyMatch(
+						s -> s.equalsIgnoreCase(name))).findFirst().orElse(null);
 	}
 	
 	public boolean hasChild(String name) {
-		return children.containsKey(name);
+		if (children.containsKey(name))
+			return true;
+		return children.values().stream().anyMatch(
+				n -> n.getName().equalsIgnoreCase(name) || n.getAliases().stream().anyMatch(
+						s -> s.equalsIgnoreCase(name)));
 	}
 	
 	public Map<String, FrameworkArgument<?>> allArguments() {

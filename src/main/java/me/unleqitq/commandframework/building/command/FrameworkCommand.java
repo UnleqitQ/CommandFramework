@@ -238,6 +238,24 @@ public class FrameworkCommand<T extends CommandSender> {
 			return new Builder<>(this, ConsoleCommandSender.class, name);
 		}
 		
+		public Builder<T> subCommand(String name, String... aliases) {
+			Builder<T> builder = new Builder<>(this, name);
+			builder.aliases = aliases;
+			return builder;
+		}
+		
+		public Builder<Player> subPlayerCommand(String name, String... aliases) {
+			Builder<Player> builder = new Builder<>(this, Player.class, name);
+			builder.aliases = aliases;
+			return builder;
+		}
+		
+		public Builder<ConsoleCommandSender> subConsoleCommand(String name, String... aliases) {
+			Builder<ConsoleCommandSender> builder = new Builder<>(this, ConsoleCommandSender.class, name);
+			builder.aliases = aliases;
+			return builder;
+		}
+		
 		@Override
 		protected FrameworkCommand.Builder<T> clone() {
 			Builder<T> builder = new Builder<>(parent, senderClass, name);
