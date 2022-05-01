@@ -490,9 +490,9 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 				CommandNode child = iterator.next();
 				String s = "/cfhelp " + plugin.getName();
 				String s0 = "";
-				CommandNode n = this;
+				CommandNode n = child;
 				do {
-					s0 = " " + n.getCommandName() + s0;
+					s0 = " " + n.command.getName() + s0;
 					n = n.parent;
 				} while (n != null);
 				rootComponent.append(Component.text(child.getCommandName()).hoverEvent(
