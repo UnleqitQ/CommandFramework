@@ -10,11 +10,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class CommandManager {
 	
+	public static final Map<String, CommandManager> registeredManagers = new HashMap<>();
+	
 	private Map<String, CommandNode> rootNodes = new HashMap<>();
 	private Plugin plugin;
 	
 	public CommandManager(Plugin plugin) {
 		this.plugin = plugin;
+		registeredManagers.put(plugin.getName(), this);
 	}
 	
 	public CommandNode register(FrameworkCommand.Builder commandBuilder) {

@@ -10,7 +10,20 @@ public final class CommandFramework extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		// Plugin startup logic
-		
+		Bukkit.getPluginCommand("cfhelp").setExecutor((sender, command, label, args) -> {
+			try {
+				CommandManager manager = CommandManager.registeredManagers.get(args[0]);
+				CommandNode node = manager.getRootNodes().get(args[1]);
+				int i = 2;
+				while (i < args.length) {
+					node = node.getChild(args[i++]);
+				}
+				node.printPaperUsage(sender);
+				return true;
+			} catch (Exception ignored) {
+				return false;
+			}
+		});
 	}
 	
 	@Override

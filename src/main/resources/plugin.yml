@@ -3,7 +3,10 @@ version: '${project.version}'
 main: me.unleqitq.commandframework.CommandFramework
 api-version: 1.18
 load: STARTUP
-authors: [UnleqitQ]
+authors: [ UnleqitQ ]
 softdepend:
   - SuperVanish
   - PremiumVanish
+commands:
+  cfhelp:
+    usage: "internal"

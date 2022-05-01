@@ -7,6 +7,7 @@ import me.unleqitq.commandframework.building.command.FrameworkCommand;
 import me.unleqitq.commandframework.building.flag.FrameworkFlag;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -487,8 +488,16 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 			Iterator<CommandNode> iterator = children.values().iterator();
 			while (iterator.hasNext()) {
 				CommandNode child = iterator.next();
+				String s = "/cfhelp " + plugin.getName();
+				String s0 = "";
+				CommandNode n = this;
+				do {
+					s0 = " " + n.getCommandName() + s0;
+					n = n.parent;
+				} while (n != null);
 				rootComponent.append(Component.text(child.getCommandName()).hoverEvent(
-						HoverEvent.showText(Component.text(child.getCommand().getDescription()))));
+						HoverEvent.showText(Component.text(child.getCommand().getDescription()))).clickEvent(
+						ClickEvent.runCommand(s + s0)));
 				if (iterator.hasNext())
 					rootComponent.append(Component.text(" | "));
 			}
