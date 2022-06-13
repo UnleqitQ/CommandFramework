@@ -25,14 +25,14 @@ public class EffectArgument extends FrameworkArgument<PotionEffectType> {
 		public Builder(String name) {
 			super(name, (c, a) -> {
 				if (a.contains(":")) {
-					return PotionEffectType.getByKey(NamespacedKey.fromString(a.toLowerCase()));
+					return PotionEffectType.getByName(a.toLowerCase());
 				}
 				else {
-					return PotionEffectType.getByKey(NamespacedKey.minecraft(a.toLowerCase()));
+					return PotionEffectType.getByName(a.toLowerCase());
 				}
-			}, (c, a) -> new ArrayList<>(EffectUtils.getEffectTypes().stream().map(PotionEffectType::getKey).filter(
-					k -> k.getKey().toLowerCase().startsWith(a.toLowerCase()) || k.toString().toLowerCase().startsWith(
-							a.toLowerCase())).map(NamespacedKey::asString).toList()));
+			}, (c, a) -> new ArrayList<>(EffectUtils.getEffectTypes().stream().map(PotionEffectType::getName).filter(
+					k -> k.toLowerCase().startsWith(a.toLowerCase()) || k.toLowerCase().startsWith(
+							a.toLowerCase())).toList()));
 		}
 		
 		public Builder setDescription(String description) {

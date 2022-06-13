@@ -12,9 +12,9 @@ public class EffectUtils {
 	
 	public static Set<PotionEffectType> getEffectTypes() {
 		try {
-			Field byKey = PotionEffectType.class.getDeclaredField("byKey");
-			byKey.setAccessible(true);
-			Map<NamespacedKey, PotionEffectType> map = (Map<NamespacedKey, PotionEffectType>) byKey.get(null);
+			Field byName = PotionEffectType.class.getDeclaredField("byName");
+			byName.setAccessible(true);
+			Map<String, PotionEffectType> map = (Map<String, PotionEffectType>) byName.get(null);
 			return new HashSet<>(map.values());
 		} catch (NoSuchFieldException | IllegalAccessException e) {
 			e.printStackTrace();

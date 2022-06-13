@@ -1,7 +1,7 @@
 name: CommandFramework
 version: '${project.version}'
 main: me.unleqitq.commandframework.CommandFramework
-api-version: 1.18
+api-version: 1.15
 load: STARTUP
 authors: [ UnleqitQ ]
 softdepend:
