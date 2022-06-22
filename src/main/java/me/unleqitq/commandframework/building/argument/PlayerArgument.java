@@ -3,6 +3,7 @@ package me.unleqitq.commandframework.building.argument;
 import me.unleqitq.commandframework.CommandFramework;
 import me.unleqitq.commandframework.ICommandContext;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
@@ -27,7 +28,7 @@ public class PlayerArgument extends FrameworkArgument<Player> {
 		if (Bukkit.getPlayer(argument) == null)
 			return false;
 		if (!check.test(c, argument))
-			c.getSender().sendMessage("§4Wrong usage: " + errorMessage());
+			c.getSender().sendMessage(ChatColor.DARK_RED + "Wrong usage: " + errorMessage());
 		return true;
 	}
 	

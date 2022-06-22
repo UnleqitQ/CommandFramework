@@ -178,7 +178,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 									String current = String.join(" ", c);
 									context.arguments.put(argument.getName(), current);
 									if (!argument.test(context, current)) {
-										context.sender.sendMessage("$4Wrong usage: " + argument.errorMessage());
+										context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
 										return false;
 									}
 								} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ignored) {
@@ -201,7 +201,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 								String current = args[i];
 								context.arguments.put(argument.getName(), current);
 								if (!argument.test(context, current)) {
-									context.sender.sendMessage("$4Wrong usage: " + argument.errorMessage());
+									context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
 									return false;
 								}
 							} catch (ArrayIndexOutOfBoundsException ignored) {
@@ -289,7 +289,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 									String current = String.join(" ", c);
 									context.arguments.put(argument.getName(), current);
 									if (!argument.test(context, current)) {
-										context.sender.sendMessage("$4Wrong usage: " + argument.errorMessage());
+										context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
 										return;
 									}
 								} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ignored) {
@@ -312,7 +312,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 								String current = args[i];
 								context.arguments.put(argument.getName(), current);
 								if (!argument.test(context, current)) {
-									context.sender.sendMessage("$4Wrong usage: " + argument.errorMessage());
+									context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
 									return;
 								}
 							} catch (ArrayIndexOutOfBoundsException ignored) {
