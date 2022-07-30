@@ -97,18 +97,17 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 	public CommandNode getChild(String name) {
 		if (children.containsKey(name))
 			return children.get(name);
-		return children.values().stream().sorted(
-				(s1, s2) -> String.CASE_INSENSITIVE_ORDER.compare(s1.getCommandName(), s2.getCommandName())).filter(
-				n -> n.getName().equalsIgnoreCase(name) || n.getAliases().stream().anyMatch(
-						s -> s.equalsIgnoreCase(name))).findFirst().orElse(null);
+		return children.values().stream()
+				.sorted((s1, s2) -> String.CASE_INSENSITIVE_ORDER.compare(s1.getCommandName(), s2.getCommandName()))
+				.filter(n -> n.getName().equalsIgnoreCase(name) ||
+						n.getAliases().stream().anyMatch(s -> s.equalsIgnoreCase(name))).findFirst().orElse(null);
 	}
 	
 	public boolean hasChild(String name) {
 		if (children.containsKey(name))
 			return true;
-		return children.values().stream().anyMatch(
-				n -> n.getName().equalsIgnoreCase(name) || n.getAliases().stream().anyMatch(
-						s -> s.equalsIgnoreCase(name)));
+		return children.values().stream().anyMatch(n -> n.getName().equalsIgnoreCase(name) ||
+				n.getAliases().stream().anyMatch(s -> s.equalsIgnoreCase(name)));
 	}
 	
 	public Map<String, FrameworkArgument<?>> allArguments() {
@@ -139,11 +138,11 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 				return false;
 			}
 			if (context.getSender() instanceof Player sender && command.getCooldown() > 0) {
-				if (!sender.hasPermission(command.getCooldownBypassPermission()) && sender.getStatistic(
-						Statistic.PLAY_ONE_MINUTE) - useMap.getOrDefault(sender.getUniqueId(),
-						0) < command.getCooldown()) {
-					int sec = (command.getCooldown() - sender.getStatistic(
-							Statistic.PLAY_ONE_MINUTE) + useMap.getOrDefault(sender.getUniqueId(), 0)) / 20;
+				if (!sender.hasPermission(command.getCooldownBypassPermission()) &&
+						sender.getStatistic(Statistic.PLAY_ONE_MINUTE) - useMap.getOrDefault(sender.getUniqueId(), 0) <
+								command.getCooldown()) {
+					int sec = (command.getCooldown() - sender.getStatistic(Statistic.PLAY_ONE_MINUTE) +
+							useMap.getOrDefault(sender.getUniqueId(), 0)) / 20;
 					int min = sec / 60;
 					int hour = min / 60;
 					String s = "";
@@ -167,7 +166,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 								continue;
 							}
 							context.setFlag(flag.getName());
-						} catch (ArrayIndexOutOfBoundsException ignored) {
+						}
+						catch (ArrayIndexOutOfBoundsException ignored) {
 						}
 					}
 					else if (element instanceof FrameworkArgument<?> argument) {
@@ -181,7 +181,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 										context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
 										return false;
 									}
-								} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ignored) {
+								}
+								catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ignored) {
 								}
 							}
 							else {
@@ -204,7 +205,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 									context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
 									return false;
 								}
-							} catch (ArrayIndexOutOfBoundsException ignored) {
+							}
+							catch (ArrayIndexOutOfBoundsException ignored) {
 							}
 						}
 						else {
@@ -218,7 +220,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 					}
 					i++;
 				}
-			} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ignored) {
+			}
+			catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ignored) {
 				printPaperUsage(context.sender);
 				return false;
 			}
@@ -227,8 +230,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 				if (hasChild(current)) {
 					String[] nextArgs = Arrays.copyOfRange(args, i + 1, args.length);
 					boolean flag = getChild(current).execute(context, nextArgs);
-					if (flag && command.getCooldown() > 0 && context.getSender() instanceof Player sender && !sender.hasPermission(
-							command.getCooldownBypassPermission()))
+					if (flag && command.getCooldown() > 0 && context.getSender() instanceof Player sender &&
+							!sender.hasPermission(command.getCooldownBypassPermission()))
 						useMap.put(sender.getUniqueId(), sender.getStatistic(Statistic.PLAY_ONE_MINUTE));
 					return flag;
 				}
@@ -241,15 +244,16 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 					printPaperUsage(context.sender);
 				else {
 					boolean flag = command.getHandler().execute(context);
-					if (flag && command.getCooldown() > 0 && context.getSender() instanceof Player sender && !sender.hasPermission(
-							command.getCooldownBypassPermission()))
+					if (flag && command.getCooldown() > 0 && context.getSender() instanceof Player sender &&
+							!sender.hasPermission(command.getCooldownBypassPermission()))
 						useMap.put(sender.getUniqueId(), sender.getStatistic(Statistic.PLAY_ONE_MINUTE));
 					return flag;
 				}
 			}
-		} catch (Exception e) {
-			context.sender.sendMessage("§4Some Error occured");
-			Bukkit.getLogger().log(Level.INFO, e.getMessage(), e);
+		}
+		catch (Exception e) {
+			context.sender.sendMessage("§4Some Error occured: " + e.getMessage());
+			//Bukkit.getLogger().log(Level.INFO, e.getMessage(), e);
 			//context.sender.sendMessage("§4" + e.getMessage());
 		}
 		return false;
@@ -257,8 +261,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 	
 	public void executeIgnorePerms(CommandContext context, String[] args) {
 		try {
-			Bukkit.getLogger().info(
-					"Executed \"" + command.getName() + " " + String.join(" ", args) + "\"\nwith " + context);
+			Bukkit.getLogger()
+					.info("Executed \"" + command.getName() + " " + String.join(" ", args) + "\"\nwith " + context);
 			context.commandNode = this;
 			int i = 0;
 			List<FrameworkCommandElement> elements = command.getElements();
@@ -277,7 +281,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 								continue;
 							}
 							context.setFlag(flag.getName());
-						} catch (ArrayIndexOutOfBoundsException ignored) {
+						}
+						catch (ArrayIndexOutOfBoundsException ignored) {
 						}
 					}
 					else if (element instanceof FrameworkArgument<?> argument) {
@@ -292,7 +297,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 										context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
 										return;
 									}
-								} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ignored) {
+								}
+								catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ignored) {
 								}
 							}
 							else {
@@ -315,7 +321,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 									context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
 									return;
 								}
-							} catch (ArrayIndexOutOfBoundsException ignored) {
+							}
+							catch (ArrayIndexOutOfBoundsException ignored) {
 							}
 						}
 						else {
@@ -329,7 +336,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 					}
 					i++;
 				}
-			} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ignored) {
+			}
+			catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ignored) {
 				printPaperUsage(context.sender);
 				return;
 			}
@@ -349,8 +357,9 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 				else
 					command.getHandler().execute(context);
 			}
-		} catch (Exception e) {
-			context.sender.sendMessage("§4Some Error occured");
+		}
+		catch (Exception e) {
+			context.sender.sendMessage("§4Some Error occured: " + e.getMessage());
 			//context.sender.sendMessage("§4" + e.getMessage());
 		}
 	}
@@ -393,20 +402,23 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 							
 							try {
 								ActionBar.sendActionBar(context, startElement, endElement);
-							} catch (Exception e) {
+							}
+							catch (Exception e) {
 								e.printStackTrace();
 							}
 							return l;
 						}
 					}
 				}
-			} catch (ArrayIndexOutOfBoundsException ignored) {
+			}
+			catch (ArrayIndexOutOfBoundsException ignored) {
 			
 			}
 			String current = args[i];
 			try {
 				ActionBar.sendActionBar(context, startElement, endElement);
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				e.printStackTrace();
 			}
 			if (args.length > i + 1) {
@@ -420,15 +432,16 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 			else {
 				for (CommandNode child : children.values()) {
 					if (child.getCommandName().toLowerCase().startsWith(current)) {
-						if (child.getCommand().getPermission() == null || context.sender.hasPermission(
-								child.getCommand().getPermission()))
+						if (child.getCommand().getPermission() == null ||
+								context.sender.hasPermission(child.getCommand().getPermission()))
 							l.add(child.getCommandName());
 					}
 				}
 			}
 			
 			return l;
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			return List.of("Housten we got a Problem");
 		}
 	}
@@ -457,21 +470,21 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 		TextComponent.Builder rootComponent;
 		if (parent == null) {
 			rootComponent = Component.text();
-			rootComponent.append(Component.text("/" + command.getName()).hoverEvent(
-					HoverEvent.showText(Component.text(command.getDescription()))));
+			rootComponent.append(Component.text("/" + command.getName())
+					.hoverEvent(HoverEvent.showText(Component.text(command.getDescription()))));
 		}
 		else {
 			rootComponent = parent.getPaperUsage(false);
 			rootComponent.append(Component.text(" "));
-			rootComponent.append(Component.text(getCommandName()).hoverEvent(
-					HoverEvent.showText(Component.text(command.getDescription()))));
+			rootComponent.append(Component.text(getCommandName())
+					.hoverEvent(HoverEvent.showText(Component.text(command.getDescription()))));
 		}
 		List<FrameworkCommandElement> elements = command.getElements();
 		for (FrameworkCommandElement element : elements) {
 			if (element instanceof FrameworkFlag flag) {
 				rootComponent.append(Component.text(" "));
-				rootComponent.append(Component.text("-" + flag.getName()).hoverEvent(
-						HoverEvent.showText(Component.text("[Flag] " + flag.getDescription()))));
+				rootComponent.append(Component.text("-" + flag.getName())
+						.hoverEvent(HoverEvent.showText(Component.text("[Flag] " + flag.getDescription()))));
 			}
 			else if (element instanceof FrameworkArgument<?> argument) {
 				rootComponent.append(Component.text(" "));
@@ -495,9 +508,9 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 					s0 = " " + n.command.getName() + s0;
 					n = n.parent;
 				} while (n != null);
-				rootComponent.append(Component.text(child.getCommandName()).hoverEvent(
-						HoverEvent.showText(Component.text(child.getCommand().getDescription()))).clickEvent(
-						ClickEvent.runCommand(s + s0)));
+				rootComponent.append(Component.text(child.getCommandName())
+						.hoverEvent(HoverEvent.showText(Component.text(child.getCommand().getDescription())))
+						.clickEvent(ClickEvent.runCommand(s + s0)));
 				if (iterator.hasNext())
 					rootComponent.append(Component.text(" | "));
 			}
