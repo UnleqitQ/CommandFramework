@@ -4,12 +4,12 @@ import me.unleqitq.commandframework.ICommandContext;
 
 import java.util.ArrayList;
 
-public class IntegerArgument extends FrameworkArgument<Integer> {
+public class ShortArgument extends FrameworkArgument<Short> {
 	
-	protected int minimum;
-	protected int maximum;
+	protected short minimum;
+	protected short maximum;
 	
-	public IntegerArgument(Builder builder) {
+	public ShortArgument(Builder builder) {
 		super(builder);
 		this.minimum = builder.minimum;
 		this.maximum = builder.maximum;
@@ -19,13 +19,13 @@ public class IntegerArgument extends FrameworkArgument<Integer> {
 		return new Builder(name);
 	}
 	
-	public static Builder optional(String name, int defaultValue) {
+	public static Builder optional(String name, short defaultValue) {
 		return (Builder) new Builder(name).optional(defaultValue);
 	}
 	
 	@Override
 	public boolean test(ICommandContext context, String argument) {
-		int v = Integer.parseInt(argument);
+		short v = Short.parseShort(argument);
 		return minimum <= v && v <= maximum;
 	}
 	
@@ -34,13 +34,13 @@ public class IntegerArgument extends FrameworkArgument<Integer> {
 		return "Value of " + name + " has to be between " + minimum + " and " + maximum;
 	}
 	
-	public static class Builder extends FrameworkArgument.Builder<Integer> {
+	public static class Builder extends FrameworkArgument.Builder<Short> {
 		
-		protected int minimum = Integer.MIN_VALUE;
-		protected int maximum = Integer.MAX_VALUE;
+		protected short minimum = Short.MIN_VALUE;
+		protected short maximum = Short.MAX_VALUE;
 		
 		public Builder(String name) {
-			super(name, (c, a) -> Integer.parseInt(a), (c, a) -> new ArrayList<>());
+			super(name, (c, a) -> Short.parseShort(a), (c, a) -> new ArrayList<>());
 		}
 		
 		public Builder setDescription(String description) {
@@ -48,18 +48,18 @@ public class IntegerArgument extends FrameworkArgument<Integer> {
 			return this;
 		}
 		
-		public Builder withMin(int minimum) {
+		public Builder withMin(short minimum) {
 			this.minimum = minimum;
 			return this;
 		}
 		
-		public Builder withMax(int maximum) {
+		public Builder withMax(short maximum) {
 			this.maximum = maximum;
 			return this;
 		}
 		
-		public IntegerArgument build() {
-			return new IntegerArgument(this);
+		public ShortArgument build() {
+			return new ShortArgument(this);
 		}
 		
 		@Override

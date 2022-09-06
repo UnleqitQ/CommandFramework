@@ -4,12 +4,12 @@ import me.unleqitq.commandframework.ICommandContext;
 
 import java.util.ArrayList;
 
-public class IntegerArgument extends FrameworkArgument<Integer> {
+public class ByteArgument extends FrameworkArgument<Byte> {
 	
-	protected int minimum;
-	protected int maximum;
+	protected byte minimum;
+	protected byte maximum;
 	
-	public IntegerArgument(Builder builder) {
+	public ByteArgument(Builder builder) {
 		super(builder);
 		this.minimum = builder.minimum;
 		this.maximum = builder.maximum;
@@ -19,13 +19,13 @@ public class IntegerArgument extends FrameworkArgument<Integer> {
 		return new Builder(name);
 	}
 	
-	public static Builder optional(String name, int defaultValue) {
+	public static Builder optional(String name, byte defaultValue) {
 		return (Builder) new Builder(name).optional(defaultValue);
 	}
 	
 	@Override
 	public boolean test(ICommandContext context, String argument) {
-		int v = Integer.parseInt(argument);
+		int v = Byte.parseByte(argument);
 		return minimum <= v && v <= maximum;
 	}
 	
@@ -34,13 +34,13 @@ public class IntegerArgument extends FrameworkArgument<Integer> {
 		return "Value of " + name + " has to be between " + minimum + " and " + maximum;
 	}
 	
-	public static class Builder extends FrameworkArgument.Builder<Integer> {
+	public static class Builder extends FrameworkArgument.Builder<Byte> {
 		
-		protected int minimum = Integer.MIN_VALUE;
-		protected int maximum = Integer.MAX_VALUE;
+		protected byte minimum = Byte.MIN_VALUE;
+		protected byte maximum = Byte.MAX_VALUE;
 		
 		public Builder(String name) {
-			super(name, (c, a) -> Integer.parseInt(a), (c, a) -> new ArrayList<>());
+			super(name, (c, a) -> Byte.parseByte(a), (c, a) -> new ArrayList<>());
 		}
 		
 		public Builder setDescription(String description) {
@@ -48,18 +48,18 @@ public class IntegerArgument extends FrameworkArgument<Integer> {
 			return this;
 		}
 		
-		public Builder withMin(int minimum) {
+		public Builder withMin(byte minimum) {
 			this.minimum = minimum;
 			return this;
 		}
 		
-		public Builder withMax(int maximum) {
+		public Builder withMax(byte maximum) {
 			this.maximum = maximum;
 			return this;
 		}
 		
-		public IntegerArgument build() {
-			return new IntegerArgument(this);
+		public ByteArgument build() {
+			return new ByteArgument(this);
 		}
 		
 		@Override

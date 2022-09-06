@@ -7,6 +7,3 @@ authors: [ UnleqitQ ]
 softdepend:
   - SuperVanish
   - PremiumVanish
-commands:
-  cfhelp:
-    usage: "internal"
