@@ -48,13 +48,13 @@ public class ShortArgument extends FrameworkArgument<Short> {
 			return this;
 		}
 		
-		public Builder withMin(short minimum) {
-			this.minimum = minimum;
+		public Builder withMin(int minimum) {
+			this.minimum = (short) minimum;
 			return this;
 		}
 		
-		public Builder withMax(short maximum) {
-			this.maximum = maximum;
+		public Builder withMax(int maximum) {
+			this.maximum = (short) maximum;
 			return this;
 		}
 		

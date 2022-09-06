@@ -48,13 +48,13 @@ public class ByteArgument extends FrameworkArgument<Byte> {
 			return this;
 		}
 		
-		public Builder withMin(byte minimum) {
-			this.minimum = minimum;
+		public Builder withMin(int minimum) {
+			this.minimum = (byte) minimum;
 			return this;
 		}
 		
-		public Builder withMax(byte maximum) {
-			this.maximum = maximum;
+		public Builder withMax(int maximum) {
+			this.maximum = (byte) maximum;
 			return this;
 		}
 		
