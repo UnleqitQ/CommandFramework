@@ -7,7 +7,12 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.help.GenericCommandHelpTopic;
+import org.bukkit.help.HelpMap;
 import org.bukkit.help.HelpTopic;
 import org.bukkit.help.IndexHelpTopic;
 import org.bukkit.plugin.Plugin;
@@ -18,7 +23,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class CommandManager {
+public class CommandManager implements Listener {
 	
 	public static final Map<String, CommandManager> registeredManagers = new HashMap<>();
 	
@@ -27,6 +32,7 @@ public class CommandManager {
 	
 	public CommandManager(Plugin plugin) {
 		this.plugin = plugin;
+		resetHelp();
 		registeredManagers.put(plugin.getName(), this);
 	}
 	
@@ -91,12 +97,12 @@ public class CommandManager {
 			return;
 		}
 		HelpTopic topic = node.getHelpTopic();
-		Bukkit.getHelpMap().addTopic(topic);
+		getHelpTopicsMap().put(topic.getName(), topic);
 		
 		if (Bukkit.getHelpMap().getHelpTopic(plugin.getName()) == null) {
 			List<HelpTopic> allTopics = new ArrayList<>();
 			allTopics.add(topic);
-			Bukkit.getHelpMap().addTopic(
+			getHelpTopicsMap().put(plugin.getName(),
 					new IndexHelpTopic(plugin.getName(), "Commands for Plugin " + plugin.getName(),
 							"", allTopics) {
 						@NotNull
@@ -186,6 +192,33 @@ public class CommandManager {
 	
 	public Plugin getPlugin() {
 		return plugin;
+	}
+	
+	
+	@EventHandler
+	public void onDisable(PluginDisableEvent event) {
+		if (event.getPlugin().getName().contentEquals(plugin.getName())) {
+			HandlerList.unregisterAll(this);
+			resetHelp();
+		}
+	}
+	
+	public void resetHelp() {
+		Map<String, HelpTopic> helpTopics = getHelpTopicsMap();
+		helpTopics.remove(plugin.getName());
+		for (String name : rootNodes.keySet()) helpTopics.remove(name);
+	}
+	
+	public static Map<String, HelpTopic> getHelpTopicsMap() {
+		try {
+			Field helpTopicsField = Bukkit.getHelpMap().getClass().getDeclaredField("helpTopics");
+			helpTopicsField.setAccessible(true);
+			return (Map<String, HelpTopic>) helpTopicsField.get(Bukkit.getHelpMap());
+		}
+		catch (NoSuchFieldException | IllegalAccessException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 }
