@@ -51,17 +51,18 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 		
 		setAliases(Arrays.stream(command.getAliases()).toList());
 		setUsage(getStringUsage(true));
-		setDescription(command.getDescription());
+		setDescription(command.getDescription().isBlank() ? getStringUsage(
+				true) : command.getDescription());
 		setPermission(command.getPermission());
 	}
 	
 	public HelpTopic getHelpTopic() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("§6Description: §r");
-		sb.append(command.getDescription());
+		sb.append(command.getDescription().isBlank() ? "§4----" : command.getDescription());
 		sb.append('\n');
 		sb.append("§6Usage: §r");
-		sb.append(getStringUsage(true));
+		sb.append(getColoredStringUsage(true));
 		sb.append('\n');
 		sb.append("§6Aliases: §r");
 		sb.append(getAliases().size() == 0 ? "§4----" : String.join(", ", getAliases()));
@@ -69,13 +70,15 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 			sb.append('\n');
 			sb.append("§6");
 			sb.append(child.getCommandName());
-			sb.append("(§r");
-			sb.append(child.getStringUsage(true));
-			sb.append("§6): §r");
-			sb.append(child.command.getDescription());
+			sb.append(" §r");
+			sb.append(child.getColoredStringUsage(true));
+			sb.append("§6: §b");
+			sb.append(child.command.getDescription()
+					.isBlank() ? "§4----" : child.command.getDescription());
 		}
 		HelpTopic h = new GenericCommandHelpTopic(this);
 		h.amendTopic(command.getDescription(), sb.toString());
+		h.amendCanSee(command.getPermission());
 		return h;
 	}
 	
@@ -507,8 +510,9 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 				rootComponent.append(new TextComponent(" "));
 				rootComponent.append(
 						new ComponentWrapper(new TextComponent("§e-" + flag.getName())).hoverEvent(
-								new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-										new Text("§b[Flag] §f" + flag.getDescription()))).component());
+										new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+												new Text("§b[Flag] §f" + flag.getDescription())))
+								.component());
 			}
 			else if (element instanceof FrameworkArgument<?> argument) {
 				rootComponent.append(new TextComponent(" "));
@@ -573,9 +577,11 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 		}
 		if (children.size() > 0 && last) {
 			sb.append(" ");
-			for (CommandNode child : children.values()) {
+			Iterator<CommandNode> iterator = children.values().iterator();
+			while (iterator.hasNext()) {
+				CommandNode child = iterator.next();
 				sb.append(child.getCommandName());
-				sb.append(" | ");
+				if (iterator.hasNext()) sb.append(" | ");
 			}
 			/*Iterator<CommandNode> iterator = children.values().iterator();
 			while (iterator.hasNext()) {
@@ -615,7 +621,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 			while (iterator.hasNext()) {
 				CommandNode child = iterator.next();
 				sb.append(child.getCommandName());
-				sb.append("|");
+				if (iterator.hasNext()) sb.append(" | ");
 			}
 		}
 		return sb.toString();
