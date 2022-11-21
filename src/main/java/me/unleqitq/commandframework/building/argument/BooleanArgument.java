@@ -20,7 +20,7 @@ public class BooleanArgument extends FrameworkArgument<Boolean> {
 	public static class Builder extends FrameworkArgument.Builder<Boolean> {
 		
 		public Builder(String name) {
-			super(name, (c, a) -> Boolean.parseBoolean(a), (c, a) -> new ArrayList<>(List.of("true", "false")));
+			super(name, "Boolean", (c, a) -> Boolean.parseBoolean(a), (c, a) -> new ArrayList<>(List.of("true", "false")));
 		}
 		
 		public Builder setDescription(String description) {

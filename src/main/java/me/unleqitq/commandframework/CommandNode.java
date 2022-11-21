@@ -508,18 +508,20 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 				rootComponent.append(
 						new ComponentWrapper(new TextComponent("§e-" + flag.getName())).hoverEvent(
 								new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-										new Text("[Flag] " + flag.getDescription()))).component());
+										new Text("§b[Flag] §f" + flag.getDescription()))).component());
 			}
 			else if (element instanceof FrameworkArgument<?> argument) {
 				rootComponent.append(new TextComponent(" "));
 				if (argument.isOptional()) rootComponent.append(new ComponentWrapper(
 						new TextComponent("§b[" + argument.getName() + "]")).hoverEvent(
-						new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-								new Text("[Argument] " + argument.getDescription()))).component());
+						new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(
+								String.format("§b[Argument §6%s§b] §f%s", argument.argumentType(),
+										argument.getDescription())))).component());
 				else rootComponent.append(new ComponentWrapper(
 						new TextComponent("§b<" + argument.getName() + ">")).hoverEvent(
-						new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-								new Text("[Argument] " + argument.getDescription()))).component());
+						new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(
+								String.format("§b[Argument §6%s§b] §f%s", argument.argumentType(),
+										argument.getDescription())))).component());
 			}
 		}
 		if (children.size() > 0 && last) {
@@ -531,7 +533,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 				String s0 = "";
 				CommandNode n = child;
 				do {
-					s0 = " §a" + n.command.getName() + s0;
+					s0 = " " + n.command.getName() + s0;
 					n = n.parent;
 				} while (n != null);
 				rootComponent.append(

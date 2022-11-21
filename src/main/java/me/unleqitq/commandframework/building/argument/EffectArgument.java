@@ -23,7 +23,7 @@ public class EffectArgument extends FrameworkArgument<PotionEffectType> {
 	public static class Builder extends FrameworkArgument.Builder<PotionEffectType> {
 		
 		public Builder(String name) {
-			super(name, (c, a) -> {
+			super(name, "Effect", (c, a) -> {
 				if (a.contains(":")) {
 					return PotionEffectType.getByName(a.toLowerCase());
 				}

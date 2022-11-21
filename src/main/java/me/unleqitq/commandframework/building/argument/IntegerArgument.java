@@ -40,7 +40,7 @@ public class IntegerArgument extends FrameworkArgument<Integer> {
 		protected int maximum = Integer.MAX_VALUE;
 		
 		public Builder(String name) {
-			super(name, (c, a) -> Integer.parseInt(a), (c, a) -> new ArrayList<>());
+			super(name, "Integer", (c, a) -> Integer.parseInt(a), (c, a) -> new ArrayList<>());
 		}
 		
 		public Builder setDescription(String description) {

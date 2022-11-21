@@ -14,6 +14,7 @@ public abstract class FrameworkArgument<T> extends FrameworkCommandElement {
 	protected T defaultValue;
 	protected BiPredicate<ICommandContext, String> check;
 	protected String errorMessage;
+	protected String argumentType;
 	
 	public FrameworkArgument(Builder<T> builder) {
 		super(builder);
@@ -23,6 +24,7 @@ public abstract class FrameworkArgument<T> extends FrameworkCommandElement {
 		this.defaultValue = builder.defaultValue;
 		this.check = builder.check;
 		this.errorMessage = builder.errorMessage;
+		this.argumentType = builder.argumentType;
 	}
 	
 	public TabCompleteProvider getTabCompleteProvider() {
@@ -53,6 +55,10 @@ public abstract class FrameworkArgument<T> extends FrameworkCommandElement {
 		return errorMessage;
 	}
 	
+	public String argumentType() {
+		return argumentType;
+	}
+	
 	public static abstract class Builder<T> extends FrameworkCommandElement.Builder {
 		
 		protected TabCompleteProvider tabCompleteProvider;
@@ -61,11 +67,20 @@ public abstract class FrameworkArgument<T> extends FrameworkCommandElement {
 		protected T defaultValue;
 		protected BiPredicate<ICommandContext, String> check = (u, v) -> true;
 		protected String errorMessage = "Wrong argument";
+		protected String argumentType;
 		
-		public Builder(String name, Parser<T> defaultParser, TabCompleteProvider defaultTabCompleteProvider) {
+		public Builder(String name, String defaultArgumentType, Parser<T> defaultParser,
+					   TabCompleteProvider defaultTabCompleteProvider) {
 			super(name);
+			this.argumentType = defaultArgumentType;
 			parser = defaultParser;
 			tabCompleteProvider = defaultTabCompleteProvider;
+		}
+		
+		@Deprecated
+		public Builder(String name, Parser<T> defaultParser,
+					   TabCompleteProvider defaultTabCompleteProvider) {
+			this(name, "UNKNOWN", defaultParser, defaultTabCompleteProvider);
 		}
 		
 		public Builder<T> setDescription(String description) {
@@ -80,6 +95,11 @@ public abstract class FrameworkArgument<T> extends FrameworkCommandElement {
 		
 		public Builder<T> tabComplete(TabCompleteProvider tabCompleteProvider) {
 			this.tabCompleteProvider = tabCompleteProvider;
+			return this;
+		}
+		
+		public Builder<T> argumentType(String argumentType) {
+			this.argumentType = argumentType;
 			return this;
 		}
 		

@@ -24,7 +24,7 @@ public class MaterialArgument extends FrameworkArgument<Material> {
 	public static class Builder extends FrameworkArgument.Builder<Material> {
 		
 		public Builder(String name) {
-			super(name, new MaterialParser(), new MaterialTabComplete(true, true));
+			super(name, "Material", new MaterialParser(), new MaterialTabComplete(true, true));
 		}
 		
 		public Builder setDescription(String description) {

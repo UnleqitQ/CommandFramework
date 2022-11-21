@@ -40,7 +40,7 @@ public class FloatArgument extends FrameworkArgument<Float> {
 		protected float maximum = Float.POSITIVE_INFINITY;
 		
 		public Builder(String name) {
-			super(name, (c, a) -> Float.parseFloat(a), (c, a) -> new ArrayList<>());
+			super(name, "Float", (c, a) -> Float.parseFloat(a), (c, a) -> new ArrayList<>());
 		}
 		
 		public Builder setDescription(String description) {

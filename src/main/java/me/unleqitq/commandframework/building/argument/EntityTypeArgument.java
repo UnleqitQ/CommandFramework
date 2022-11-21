@@ -23,7 +23,7 @@ public class EntityTypeArgument extends FrameworkArgument<EntityType> {
 	public static class Builder extends FrameworkArgument.Builder<EntityType> {
 		
 		public Builder(String name) {
-			super(name, (c, a) -> EntityType.fromName(a.toLowerCase()), (c, a) -> new ArrayList<>(
+			super(name, "Entity", (c, a) -> EntityType.fromName(a.toLowerCase()), (c, a) -> new ArrayList<>(
 					Arrays.stream(EntityType.values()).filter(e -> e != EntityType.UNKNOWN).map(EntityType::getKey).map(
 							NamespacedKey::getKey).filter(s -> s.toLowerCase().startsWith(a.toLowerCase())).toList()));
 		}

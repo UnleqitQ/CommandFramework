@@ -40,7 +40,7 @@ public class ByteArgument extends FrameworkArgument<Byte> {
 		protected byte maximum = Byte.MAX_VALUE;
 		
 		public Builder(String name) {
-			super(name, (c, a) -> Byte.parseByte(a), (c, a) -> new ArrayList<>());
+			super(name, "Byte", (c, a) -> Byte.parseByte(a), (c, a) -> new ArrayList<>());
 		}
 		
 		public Builder setDescription(String description) {

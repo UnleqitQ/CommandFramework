@@ -20,7 +20,7 @@ public class CharacterArgument extends FrameworkArgument<Character> {
 	public static class Builder extends FrameworkArgument.Builder<Character> {
 		
 		public Builder(String name) {
-			super(name, (c, a) -> a.charAt(0), (c, a) -> {
+			super(name, "Character", (c, a) -> a.charAt(0), (c, a) -> {
 				List<String> l = new ArrayList<>();
 				for (int i = 0; i < 256; i++) {
 					char chr = (char) i;

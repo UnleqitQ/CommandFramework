@@ -23,7 +23,7 @@ public class EnchantmentArgument extends FrameworkArgument<Enchantment> {
 	public static class Builder extends FrameworkArgument.Builder<Enchantment> {
 		
 		public Builder(String name) {
-			super(name, (c, a) -> {
+			super(name, "Enchantment", (c, a) -> {
 				if (a.contains(":")) {
 					return Enchantment.getByKey(NamespacedKey.fromString(a.toLowerCase()));
 				}

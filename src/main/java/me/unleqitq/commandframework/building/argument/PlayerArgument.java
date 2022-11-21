@@ -35,7 +35,7 @@ public class PlayerArgument extends FrameworkArgument<Player> {
 	public static class Builder extends FrameworkArgument.Builder<Player> {
 		
 		public Builder(String name) {
-			super(name, (c, a) -> Bukkit.getPlayer(a),
+			super(name, "Player", (c, a) -> Bukkit.getPlayer(a),
 					(c, a) -> new ArrayList<>(Bukkit.getOnlinePlayers().stream().filter(p -> {
 						if (c.getSender() instanceof ConsoleCommandSender)
 							return true;

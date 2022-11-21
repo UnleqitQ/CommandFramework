@@ -41,7 +41,7 @@ public class DoubleArgument extends FrameworkArgument<Double> {
 		protected double maximum = Double.POSITIVE_INFINITY;
 		
 		public Builder(String name) {
-			super(name, (c, a) -> Double.parseDouble(a), (c, a) -> new ArrayList<>());
+			super(name, "Double", (c, a) -> Double.parseDouble(a), (c, a) -> new ArrayList<>());
 		}
 		
 		public Builder setDescription(String description) {

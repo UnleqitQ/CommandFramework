@@ -40,7 +40,7 @@ public class ShortArgument extends FrameworkArgument<Short> {
 		protected short maximum = Short.MAX_VALUE;
 		
 		public Builder(String name) {
-			super(name, (c, a) -> Short.parseShort(a), (c, a) -> new ArrayList<>());
+			super(name, "Short", (c, a) -> Short.parseShort(a), (c, a) -> new ArrayList<>());
 		}
 		
 		public Builder setDescription(String description) {

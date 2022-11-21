@@ -19,7 +19,7 @@ public class StringArrayArgument extends FrameworkArgument<String[]> {
 	public static class Builder extends FrameworkArgument.Builder<String[]> {
 		
 		public Builder(String name) {
-			super(name, (c, a) -> a.split(" "), (c, a) -> new ArrayList<>());
+			super(name, "StringArray", (c, a) -> a.split(" "), (c, a) -> new ArrayList<>());
 		}
 		
 		public Builder setDescription(String description) {

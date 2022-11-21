@@ -22,7 +22,7 @@ public class WorldArgument extends FrameworkArgument<World> {
 	public static class Builder extends FrameworkArgument.Builder<World> {
 		
 		public Builder(String name) {
-			super(name, (c, a) -> Bukkit.getWorld(a), (c, a) -> new ArrayList<>(
+			super(name, "World", (c, a) -> Bukkit.getWorld(a), (c, a) -> new ArrayList<>(
 					Bukkit.getWorlds().stream().map(World::getName).filter(
 							s -> s.toLowerCase().startsWith(a.toLowerCase())).toList()));
 		}

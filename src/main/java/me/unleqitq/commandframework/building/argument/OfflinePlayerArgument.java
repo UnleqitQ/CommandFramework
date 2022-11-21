@@ -25,7 +25,7 @@ public class OfflinePlayerArgument extends FrameworkArgument<OfflinePlayer> {
 	public static class Builder extends FrameworkArgument.Builder<OfflinePlayer> {
 		
 		public Builder(String name) {
-			super(name, (c, a) -> CommandUtils.getCachedOfflinePlayer(a), (c, a) -> new ArrayList<>(
+			super(name, "OfflinePlayer", (c, a) -> CommandUtils.getCachedOfflinePlayer(a), (c, a) -> new ArrayList<>(
 					Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName)
 							.filter(Objects::nonNull)
 							.filter(s -> s.toLowerCase().startsWith(a.toLowerCase())).toList()));

@@ -16,7 +16,8 @@ public class EnumArgument<E extends Enum<E>> extends FrameworkArgument<E> {
 		return new Builder<>(name, argumentEnum);
 	}
 	
-	public static <E extends Enum<E>> Builder<E> optional(String name, Class<E> argumentEnum, E defaultValue) {
+	public static <E extends Enum<E>> Builder<E> optional(String name, Class<E> argumentEnum,
+														  E defaultValue) {
 		return (Builder<E>) new Builder<>(name, argumentEnum).optional(defaultValue);
 	}
 	
@@ -25,13 +26,13 @@ public class EnumArgument<E extends Enum<E>> extends FrameworkArgument<E> {
 		Class<E> argumentEnum;
 		
 		public Builder(String name, Class<E> argumentEnum) {
-			super(name, (c, a) -> null, (c, a) -> null);
+			super(name, argumentEnum.getSimpleName(), (c, a) -> null, (c, a) -> null);
 			this.argumentEnum = argumentEnum;
-			parser((c, a) -> Arrays.stream(Builder.this.argumentEnum.getEnumConstants()).filter(
-					e -> e.name().equalsIgnoreCase(a)).findFirst().orElse(null));
+			parser((c, a) -> Arrays.stream(Builder.this.argumentEnum.getEnumConstants())
+					.filter(e -> e.name().equalsIgnoreCase(a)).findFirst().orElse(null));
 			tabComplete((c, a) -> new ArrayList<>(
-					Arrays.stream(Builder.this.argumentEnum.getEnumConstants()).map(Enum::name).filter(
-							s -> s.toLowerCase().startsWith(a.toLowerCase())).toList()));
+					Arrays.stream(Builder.this.argumentEnum.getEnumConstants()).map(Enum::name)
+							.filter(s -> s.toLowerCase().startsWith(a.toLowerCase())).toList()));
 		}
 		
 		public Builder<E> setDescription(String description) {
