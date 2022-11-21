@@ -1,5 +1,6 @@
 package me.unleqitq.commandframework.building.argument;
 
+import me.unleqitq.commandframework.utils.CommandUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
@@ -24,9 +25,10 @@ public class OfflinePlayerArgument extends FrameworkArgument<OfflinePlayer> {
 	public static class Builder extends FrameworkArgument.Builder<OfflinePlayer> {
 		
 		public Builder(String name) {
-			super(name, (c, a) -> Bukkit.getOfflinePlayerIfCached(a), (c, a) -> new ArrayList<>(
-					Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName).filter(
-							Objects::nonNull).filter(s -> s.toLowerCase().startsWith(a.toLowerCase())).toList()));
+			super(name, (c, a) -> CommandUtils.getCachedOfflinePlayer(a), (c, a) -> new ArrayList<>(
+					Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName)
+							.filter(Objects::nonNull)
+							.filter(s -> s.toLowerCase().startsWith(a.toLowerCase())).toList()));
 		}
 		
 		public Builder setDescription(String description) {

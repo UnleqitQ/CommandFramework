@@ -1,6 +1,7 @@
 package me.unleqitq.commandframework;
 
 import me.unleqitq.commandframework.building.command.FrameworkCommand;
+import me.unleqitq.commandframework.utils.CommandUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.help.HelpTopic;
 import org.bukkit.plugin.Plugin;
@@ -30,7 +31,7 @@ public class CommandManager {
 				/*Command prev = Bukkit.getCommandMap().getCommand(commandBuilder.getName());
 				if (prev != null)
 					prev.unregister(Bukkit.getCommandMap());*/
-				Bukkit.getCommandMap().register(node.getLabel(), plugin.getName().toLowerCase(), node);
+				CommandUtils.getCommandMap().register(node.getLabel(), plugin.getName().toLowerCase(), node);
 			}
 			rootNodes.put(commandBuilder.getName(), node);
 		}
@@ -58,7 +59,7 @@ public class CommandManager {
 				/*Command prev = Bukkit.getCommandMap().getCommand(commandBuilder.getName());
 				if (prev != null)
 					prev.unregister(Bukkit.getCommandMap());*/
-				Bukkit.getCommandMap().register(node.getLabel(), plugin.getName().toLowerCase(), node);
+				CommandUtils.getCommandMap().register(node.getLabel(), plugin.getName().toLowerCase(), node);
 			}
 			rootNodes.put(commandBuilder.getName(), node);
 		}

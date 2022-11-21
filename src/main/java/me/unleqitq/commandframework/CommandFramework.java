@@ -18,7 +18,7 @@ public final class CommandFramework extends JavaPlugin {
 				while (i < args.length) {
 					node = node.getChild(args[i++]);
 				}
-				node.printPaperUsage(sender);
+				node.printComponentUsage(sender);
 				return true;
 			} catch (Exception ignored) {
 				return false;

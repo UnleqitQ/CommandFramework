@@ -5,10 +5,13 @@ import me.unleqitq.commandframework.building.argument.FrameworkArgument;
 import me.unleqitq.commandframework.building.argument.StringArrayArgument;
 import me.unleqitq.commandframework.building.command.FrameworkCommand;
 import me.unleqitq.commandframework.building.flag.FrameworkFlag;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
+import me.unleqitq.commandframework.utils.CommandUtils;
+import me.unleqitq.commandframework.utils.ComponentWrapper;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Statistic;
@@ -25,7 +28,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.logging.Level;
 
 public class CommandNode extends Command implements PluginIdentifiableCommand {
 	
@@ -95,19 +97,20 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 	
 	@Nullable
 	public CommandNode getChild(String name) {
-		if (children.containsKey(name))
-			return children.get(name);
+		if (children.containsKey(name)) return children.get(name);
 		return children.values().stream()
-				.sorted((s1, s2) -> String.CASE_INSENSITIVE_ORDER.compare(s1.getCommandName(), s2.getCommandName()))
-				.filter(n -> n.getName().equalsIgnoreCase(name) ||
-						n.getAliases().stream().anyMatch(s -> s.equalsIgnoreCase(name))).findFirst().orElse(null);
+				.sorted((s1, s2) -> String.CASE_INSENSITIVE_ORDER.compare(s1.getCommandName(),
+						s2.getCommandName())).filter(n -> n.getName().equalsIgnoreCase(name) ||
+														  n.getAliases().stream().anyMatch(
+																  s -> s.equalsIgnoreCase(name)))
+				.findFirst().orElse(null);
 	}
 	
 	public boolean hasChild(String name) {
-		if (children.containsKey(name))
-			return true;
+		if (children.containsKey(name)) return true;
 		return children.values().stream().anyMatch(n -> n.getName().equalsIgnoreCase(name) ||
-				n.getAliases().stream().anyMatch(s -> s.equalsIgnoreCase(name)));
+														n.getAliases().stream().anyMatch(
+																s -> s.equalsIgnoreCase(name)));
 	}
 	
 	public Map<String, FrameworkArgument<?>> allArguments() {
@@ -117,7 +120,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 		}
 		for (Object element : command.getElements()) {
 			if (element instanceof FrameworkArgument) {
-				argumentMap.put(((FrameworkArgument<?>) element).getName(), (FrameworkArgument<?>) element);
+				argumentMap.put(((FrameworkArgument<?>) element).getName(),
+						(FrameworkArgument<?>) element);
 			}
 		}
 		return argumentMap;
@@ -128,30 +132,29 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 			context.commandNode = this;
 			int i = 0;
 			List<FrameworkCommandElement> elements = command.getElements();
-			if (command.getPermission() != null && !context.sender.hasPermission(command.getPermission())) {
+			if (command.getPermission() != null &&
+				!context.sender.hasPermission(command.getPermission())) {
 				CommandUtils.printMissingPermission(context.getSender(), command.getPermission());
 				return false;
 			}
 			if (!command.getSenderClass().isAssignableFrom(context.sender.getClass())) {
-				context.sender.sendMessage(
-						"§4You can only excute this command as " + command.getSenderClass().getSimpleName());
+				context.sender.sendMessage("§4You can only excute this command as " +
+										   command.getSenderClass().getSimpleName());
 				return false;
 			}
 			if (context.getSender() instanceof Player sender && command.getCooldown() > 0) {
 				if (!sender.hasPermission(command.getCooldownBypassPermission()) &&
-						sender.getStatistic(Statistic.PLAY_ONE_MINUTE) - useMap.getOrDefault(sender.getUniqueId(), 0) <
-								command.getCooldown()) {
-					int sec = (command.getCooldown() - sender.getStatistic(Statistic.PLAY_ONE_MINUTE) +
-							useMap.getOrDefault(sender.getUniqueId(), 0)) / 20;
+					sender.getStatistic(Statistic.PLAY_ONE_MINUTE) -
+					useMap.getOrDefault(sender.getUniqueId(), 0) < command.getCooldown()) {
+					int sec = (command.getCooldown() -
+							   sender.getStatistic(Statistic.PLAY_ONE_MINUTE) +
+							   useMap.getOrDefault(sender.getUniqueId(), 0)) / 20;
 					int min = sec / 60;
 					int hour = min / 60;
 					String s = "";
-					if (hour > 0)
-						s += hour + "h ";
-					if (min % 60 > 0)
-						s += min % 60 + "m ";
-					if (sec == 0 || sec % 60 > 0)
-						s += sec % 60 + "s ";
+					if (hour > 0) s += hour + "h ";
+					if (min % 60 > 0) s += min % 60 + "m ";
+					if (sec == 0 || sec % 60 > 0) s += sec % 60 + "s ";
 					sender.sendMessage(String.format(command.getCooldownMessage(), s));
 					return false;
 				}
@@ -178,11 +181,13 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 									String current = String.join(" ", c);
 									context.arguments.put(argument.getName(), current);
 									if (!argument.test(context, current)) {
-										context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
+										context.sender.sendMessage(
+												"§4Wrong usage: " + argument.errorMessage());
 										return false;
 									}
 								}
-								catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ignored) {
+								catch (ArrayIndexOutOfBoundsException |
+									   IllegalArgumentException ignored) {
 								}
 							}
 							else {
@@ -190,7 +195,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 								String current = String.join(" ", c);
 								context.arguments.put(argument.getName(), current);
 								if (!argument.test(context, current)) {
-									context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
+									context.sender.sendMessage(
+											"§4Wrong usage: " + argument.errorMessage());
 									return false;
 								}
 							}
@@ -202,7 +208,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 								String current = args[i];
 								context.arguments.put(argument.getName(), current);
 								if (!argument.test(context, current)) {
-									context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
+									context.sender.sendMessage(
+											"§4Wrong usage: " + argument.errorMessage());
 									return false;
 								}
 							}
@@ -213,7 +220,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 							String current = args[i];
 							context.arguments.put(argument.getName(), current);
 							if (!argument.test(context, current)) {
-								context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
+								context.sender.sendMessage(
+										"§4Wrong usage: " + argument.errorMessage());
 								return false;
 							}
 						}
@@ -222,7 +230,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 				}
 			}
 			catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ignored) {
-				printPaperUsage(context.sender);
+				printComponentUsage(context.sender);
 				return false;
 			}
 			if (args.length > i) {
@@ -230,23 +238,26 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 				if (hasChild(current)) {
 					String[] nextArgs = Arrays.copyOfRange(args, i + 1, args.length);
 					boolean flag = getChild(current).execute(context, nextArgs);
-					if (flag && command.getCooldown() > 0 && context.getSender() instanceof Player sender &&
-							!sender.hasPermission(command.getCooldownBypassPermission()))
-						useMap.put(sender.getUniqueId(), sender.getStatistic(Statistic.PLAY_ONE_MINUTE));
+					if (flag && command.getCooldown() > 0 &&
+						context.getSender() instanceof Player sender &&
+						!sender.hasPermission(command.getCooldownBypassPermission()))
+						useMap.put(sender.getUniqueId(),
+								sender.getStatistic(Statistic.PLAY_ONE_MINUTE));
 					return flag;
 				}
 				else {
-					printPaperUsage(context.sender);
+					printComponentUsage(context.sender);
 				}
 			}
 			else {
-				if (command.getHandler() == null)
-					printPaperUsage(context.sender);
+				if (command.getHandler() == null) printComponentUsage(context.sender);
 				else {
 					boolean flag = command.getHandler().execute(context);
-					if (flag && command.getCooldown() > 0 && context.getSender() instanceof Player sender &&
-							!sender.hasPermission(command.getCooldownBypassPermission()))
-						useMap.put(sender.getUniqueId(), sender.getStatistic(Statistic.PLAY_ONE_MINUTE));
+					if (flag && command.getCooldown() > 0 &&
+						context.getSender() instanceof Player sender &&
+						!sender.hasPermission(command.getCooldownBypassPermission()))
+						useMap.put(sender.getUniqueId(),
+								sender.getStatistic(Statistic.PLAY_ONE_MINUTE));
 					return flag;
 				}
 			}
@@ -262,13 +273,14 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 	public void executeIgnorePerms(CommandContext context, String[] args) {
 		try {
 			Bukkit.getLogger()
-					.info("Executed \"" + command.getName() + " " + String.join(" ", args) + "\"\nwith " + context);
+					.info("Executed \"" + command.getName() + " " + String.join(" ", args) +
+						  "\"\nwith " + context);
 			context.commandNode = this;
 			int i = 0;
 			List<FrameworkCommandElement> elements = command.getElements();
 			if (!command.getSenderClass().isAssignableFrom(context.sender.getClass())) {
-				context.sender.sendMessage(
-						"§4You can only excute this command as " + command.getSenderClass().getSimpleName());
+				context.sender.sendMessage("§4You can only excute this command as " +
+										   command.getSenderClass().getSimpleName());
 				return;
 			}
 			try {
@@ -294,11 +306,13 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 									String current = String.join(" ", c);
 									context.arguments.put(argument.getName(), current);
 									if (!argument.test(context, current)) {
-										context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
+										context.sender.sendMessage(
+												"§4Wrong usage: " + argument.errorMessage());
 										return;
 									}
 								}
-								catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ignored) {
+								catch (ArrayIndexOutOfBoundsException |
+									   IllegalArgumentException ignored) {
 								}
 							}
 							else {
@@ -306,7 +320,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 								String current = String.join(" ", c);
 								context.arguments.put(argument.getName(), current);
 								if (!argument.test(context, current)) {
-									context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
+									context.sender.sendMessage(
+											"§4Wrong usage: " + argument.errorMessage());
 									return;
 								}
 							}
@@ -318,7 +333,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 								String current = args[i];
 								context.arguments.put(argument.getName(), current);
 								if (!argument.test(context, current)) {
-									context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
+									context.sender.sendMessage(
+											"§4Wrong usage: " + argument.errorMessage());
 									return;
 								}
 							}
@@ -329,7 +345,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 							String current = args[i];
 							context.arguments.put(argument.getName(), current);
 							if (!argument.test(context, current)) {
-								context.sender.sendMessage("§4Wrong usage: " + argument.errorMessage());
+								context.sender.sendMessage(
+										"§4Wrong usage: " + argument.errorMessage());
 								return;
 							}
 						}
@@ -338,7 +355,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 				}
 			}
 			catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ignored) {
-				printPaperUsage(context.sender);
+				printComponentUsage(context.sender);
 				return;
 			}
 			if (args.length > i) {
@@ -348,14 +365,12 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 					getChild(current).executeIgnorePerms(context, nextArgs);
 				}
 				else {
-					printPaperUsage(context.sender);
+					printComponentUsage(context.sender);
 				}
 			}
 			else {
-				if (command.getHandler() == null)
-					printPaperUsage(context.sender);
-				else
-					command.getHandler().execute(context);
+				if (command.getHandler() == null) printComponentUsage(context.sender);
+				else command.getHandler().execute(context);
 			}
 		}
 		catch (Exception e) {
@@ -367,7 +382,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 	private List<String> tabComplete(CommandContext context, String[] args) {
 		try {
 			List<String> l = new ArrayList<>();
-			if (command.getPermission() != null && !context.sender.hasPermission(command.getPermission())) {
+			if (command.getPermission() != null &&
+				!context.sender.hasPermission(command.getPermission())) {
 				return l;
 			}
 			context.commandNode = this;
@@ -380,8 +396,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 					String current = args[i];
 					if (i < args.length - 1) {
 						if (element instanceof FrameworkFlag flag) {
-							if (!("-" + flag.getName()).equalsIgnoreCase(current))
-								continue;
+							if (!("-" + flag.getName()).equalsIgnoreCase(current)) continue;
 							context.setFlag(flag.getName());
 						}
 						else if (element instanceof FrameworkArgument<?> argument) {
@@ -390,15 +405,15 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 						i++;
 					}
 					else {
-						if (startElement == null)
-							startElement = element.getName();
+						if (startElement == null) startElement = element.getName();
 						endElement = element.getName();
 						if (element instanceof FrameworkFlag flag) {
 							if (("-" + flag.getName()).toLowerCase().contains(current))
 								l.add("-" + flag.getName());
 						}
 						else if (element instanceof FrameworkArgument<?> argument) {
-							l.addAll(argument.getTabCompleteProvider().tabComplete(context, current));
+							l.addAll(argument.getTabCompleteProvider()
+									.tabComplete(context, current));
 							
 							try {
 								ActionBar.sendActionBar(context, startElement, endElement);
@@ -433,7 +448,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 				for (CommandNode child : children.values()) {
 					if (child.getCommandName().toLowerCase().startsWith(current)) {
 						if (child.getCommand().getPermission() == null ||
-								context.sender.hasPermission(child.getCommand().getPermission()))
+							context.sender.hasPermission(child.getCommand().getPermission()))
 							l.add(child.getCommandName());
 					}
 				}
@@ -447,7 +462,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 	}
 	
 	@Override
-	public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
+	public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel,
+						   @NotNull String[] args) {
 		CommandContext context = new CommandContext(sender, String.join(" ", args));
 		
 		execute(context, args);
@@ -456,48 +472,58 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 	
 	@Override
 	@NotNull
-	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) {
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias,
+									@NotNull String[] args) {
 		CommandContext context = new CommandContext(sender, String.join(" ", args));
 		
 		return tabComplete(context, args);
 	}
 	
-	public void printPaperUsage(CommandSender sender) {
-		sender.sendMessage(getPaperUsage(true));
+	public void printComponentUsage(CommandSender sender) {
+		sender.spigot().sendMessage(getComponentUsage(true).create());
 	}
 	
-	public TextComponent.Builder getPaperUsage(boolean last) {
-		TextComponent.Builder rootComponent;
+	public ComponentBuilder getComponentUsage(boolean last) {
+		ComponentBuilder rootComponent;
+		
 		if (parent == null) {
-			rootComponent = Component.text();
-			rootComponent.append(Component.text("/" + command.getName())
-					.hoverEvent(HoverEvent.showText(Component.text(command.getDescription()))));
+			rootComponent = new ComponentBuilder();
+			rootComponent.append(
+					new ComponentWrapper(new TextComponent("§a/" + command.getName())).hoverEvent(
+							new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+									new Text(command.getDescription()))).component());
 		}
 		else {
-			rootComponent = parent.getPaperUsage(false);
-			rootComponent.append(Component.text(" "));
-			rootComponent.append(Component.text(getCommandName())
-					.hoverEvent(HoverEvent.showText(Component.text(command.getDescription()))));
+			rootComponent = parent.getComponentUsage(false);
+			rootComponent.append(new TextComponent(" "));
+			rootComponent.append(
+					new ComponentWrapper(new TextComponent(getCommandName())).hoverEvent(
+							new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+									new Text(command.getDescription()))).component());
 		}
 		List<FrameworkCommandElement> elements = command.getElements();
 		for (FrameworkCommandElement element : elements) {
 			if (element instanceof FrameworkFlag flag) {
-				rootComponent.append(Component.text(" "));
-				rootComponent.append(Component.text("-" + flag.getName())
-						.hoverEvent(HoverEvent.showText(Component.text("[Flag] " + flag.getDescription()))));
+				rootComponent.append(new TextComponent(" "));
+				rootComponent.append(
+						new ComponentWrapper(new TextComponent("§e-" + flag.getName())).hoverEvent(
+								new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+										new Text("[Flag] " + flag.getDescription()))).component());
 			}
 			else if (element instanceof FrameworkArgument<?> argument) {
-				rootComponent.append(Component.text(" "));
-				if (argument.isOptional())
-					rootComponent.append(Component.text("[" + argument.getName() + "]").hoverEvent(
-							HoverEvent.showText(Component.text("[Argument] " + argument.getDescription()))));
-				else
-					rootComponent.append(Component.text("<" + argument.getName() + ">").hoverEvent(
-							HoverEvent.showText(Component.text("[Argument] " + argument.getDescription()))));
+				rootComponent.append(new TextComponent(" "));
+				if (argument.isOptional()) rootComponent.append(new ComponentWrapper(
+						new TextComponent("§b[" + argument.getName() + "]")).hoverEvent(
+						new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+								new Text("[Argument] " + argument.getDescription()))).component());
+				else rootComponent.append(new ComponentWrapper(
+						new TextComponent("§b<" + argument.getName() + ">")).hoverEvent(
+						new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+								new Text("[Argument] " + argument.getDescription()))).component());
 			}
 		}
 		if (children.size() > 0 && last) {
-			rootComponent.append(Component.text(" "));
+			rootComponent.append(new TextComponent(" "));
 			Iterator<CommandNode> iterator = children.values().iterator();
 			while (iterator.hasNext()) {
 				CommandNode child = iterator.next();
@@ -505,14 +531,16 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 				String s0 = "";
 				CommandNode n = child;
 				do {
-					s0 = " " + n.command.getName() + s0;
+					s0 = " §a" + n.command.getName() + s0;
 					n = n.parent;
 				} while (n != null);
-				rootComponent.append(Component.text(child.getCommandName())
-						.hoverEvent(HoverEvent.showText(Component.text(child.getCommand().getDescription())))
-						.clickEvent(ClickEvent.runCommand(s + s0)));
-				if (iterator.hasNext())
-					rootComponent.append(Component.text(" | "));
+				rootComponent.append(
+						new ComponentWrapper(new TextComponent(child.getCommandName())).hoverEvent(
+										new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+												new Text(child.getCommand().getDescription())))
+								.clickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, s + s0))
+								.component());
+				if (iterator.hasNext()) rootComponent.append(new TextComponent(" | "));
 			}
 		}
 		return rootComponent;
@@ -537,10 +565,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 			}
 			else if (element instanceof FrameworkArgument<?> argument) {
 				sb.append(" ");
-				if (argument.isOptional())
-					sb.append("[" + argument.getName() + "]");
-				else
-					sb.append("<" + argument.getName() + ">");
+				if (argument.isOptional()) sb.append("[" + argument.getName() + "]");
+				else sb.append("<" + argument.getName() + ">");
 			}
 		}
 		if (children.size() > 0 && last) {
@@ -593,7 +619,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 		return sb.toString();
 	}
 	
-	public String getActionBarUsage(String startElement, String endElement, boolean[] editingCurrent, boolean last) {
+	public String getActionBarUsage(String startElement, String endElement,
+									boolean[] editingCurrent, boolean last) {
 		StringBuilder sb;
 		sb = new StringBuilder();
 		sb.append(ChatColor.GRAY);
@@ -621,26 +648,21 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 				if (editingCurrent[0]) {
 					sb.append(ChatColor.GREEN);
 				}
-				if (argument.isOptional())
-					sb.append("[" + argument.getName() + "]");
-				else
-					sb.append("<" + argument.getName() + ">");
+				if (argument.isOptional()) sb.append("[" + argument.getName() + "]");
+				else sb.append("<" + argument.getName() + ">");
 				sb.append(ChatColor.GRAY);
 			}
-			if (element.getName().equals(endElement))
-				editingCurrent[0] = false;
+			if (element.getName().equals(endElement)) editingCurrent[0] = false;
 		}
 		if (children.size() > 0 && last) {
 			sb.append(" ");
-			if (startElement == null)
-				editingCurrent[0] = true;
-			if (editingCurrent[0])
-				sb.append(ChatColor.GREEN);
+			if (startElement == null) editingCurrent[0] = true;
+			if (editingCurrent[0]) sb.append(ChatColor.GREEN);
 			Iterator<CommandNode> iterator = children.values().iterator();
 			while (iterator.hasNext()) {
 				CommandNode child = iterator.next();
 				sb.append(child.getCommandName());
-				sb.append(" | ");
+				if (iterator.hasNext()) sb.append(" | ");
 			}
 			sb.append(ChatColor.GRAY);
 		}
