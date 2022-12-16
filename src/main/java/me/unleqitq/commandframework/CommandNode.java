@@ -21,6 +21,7 @@ import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.help.GenericCommandHelpTopic;
 import org.bukkit.help.HelpTopic;
+import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,9 +51,9 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 		this.plugin = plugin;
 		
 		setAliases(Arrays.stream(command.getAliases()).toList());
-		setUsage(getStringUsage(true));
-		setDescription(command.getDescription().isBlank() ? getStringUsage(
-				true) : command.getDescription());
+		setUsage(getStringUsage(true, Bukkit.getConsoleSender()));
+		setDescription(command.getDescription().isBlank() ? getStringUsage(true,
+				Bukkit.getConsoleSender()) : command.getDescription());
 		setPermission(command.getPermission());
 	}
 	
@@ -62,7 +63,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 		sb.append(command.getDescription().isBlank() ? "§4----" : command.getDescription());
 		sb.append('\n');
 		sb.append("§6Usage: §r");
-		sb.append(getColoredStringUsage(true));
+		sb.append(getColoredStringUsage(true, Bukkit.getConsoleSender()));
 		sb.append('\n');
 		sb.append("§6Aliases: §r");
 		sb.append(getAliases().size() == 0 ? "§4----" : String.join(", ", getAliases()));
@@ -71,7 +72,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 			sb.append("§6");
 			sb.append(child.getCommandName());
 			sb.append(" §r");
-			sb.append(child.getColoredStringUsage(true));
+			sb.append(child.getColoredStringUsage(true, Bukkit.getConsoleSender()));
 			sb.append("§6: §b");
 			sb.append(child.command.getDescription()
 					.isBlank() ? "§4----" : child.command.getDescription());
@@ -483,10 +484,15 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 	}
 	
 	public void printComponentUsage(CommandSender sender) {
-		sender.spigot().sendMessage(getComponentUsage(true).create());
+		if (getCommand().getPermission() != null &&
+			!sender.hasPermission(getCommand().getPermission())) {
+			CommandUtils.printMissingPermission(sender, command.getPermission());
+			return;
+		}
+		sender.spigot().sendMessage(getComponentUsage(true, sender).create());
 	}
 	
-	public ComponentBuilder getComponentUsage(boolean last) {
+	public ComponentBuilder getComponentUsage(boolean last, Permissible permissible) {
 		ComponentBuilder rootComponent;
 		
 		if (parent == null) {
@@ -497,7 +503,7 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 									new Text(command.getDescription()))).component());
 		}
 		else {
-			rootComponent = parent.getComponentUsage(false);
+			rootComponent = parent.getComponentUsage(false, permissible);
 			rootComponent.append(new TextComponent(" "));
 			rootComponent.append(
 					new ComponentWrapper(new TextComponent(getCommandName())).hoverEvent(
@@ -528,9 +534,14 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 										argument.getDescription())))).component());
 			}
 		}
-		if (children.size() > 0 && last) {
+		if (last && children.values().stream().anyMatch(
+				c -> c.getCommand().getPermission() == null ||
+					 permissible.hasPermission(c.getCommand().getPermission()))) {
 			rootComponent.append(new TextComponent(" "));
-			Iterator<CommandNode> iterator = children.values().iterator();
+			Iterator<CommandNode> iterator = children.values().stream()
+					.filter(c -> c.getCommand().getPermission() == null ||
+								 permissible.hasPermission(c.getCommand().getPermission()))
+					.sorted(Comparator.comparing(CommandNode::getCommandName)).iterator();
 			while (iterator.hasNext()) {
 				CommandNode child = iterator.next();
 				String s = "/cfhelp " + plugin.getName();
@@ -552,14 +563,14 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 		return rootComponent;
 	}
 	
-	public String getStringUsage(boolean last) {
+	public String getStringUsage(boolean last, Permissible permissible) {
 		StringBuilder sb;
 		sb = new StringBuilder();
 		if (parent == null) {
 			sb.append("/" + command.getName());
 		}
 		else {
-			sb.append(parent.getStringUsage(false));
+			sb.append(parent.getStringUsage(false, permissible));
 			sb.append(" ");
 			sb.append(getCommandName());
 		}
@@ -575,9 +586,14 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 				else sb.append("<" + argument.getName() + ">");
 			}
 		}
-		if (children.size() > 0 && last) {
+		if (last && children.values().stream().anyMatch(
+				c -> c.getCommand().getPermission() == null ||
+					 permissible.hasPermission(c.getCommand().getPermission()))) {
 			sb.append(" ");
-			Iterator<CommandNode> iterator = children.values().iterator();
+			Iterator<CommandNode> iterator = children.values().stream()
+					.filter(c -> c.getCommand().getPermission() == null ||
+								 permissible.hasPermission(c.getCommand().getPermission()))
+					.sorted(Comparator.comparing(CommandNode::getCommandName)).iterator();
 			while (iterator.hasNext()) {
 				CommandNode child = iterator.next();
 				sb.append(child.getCommandName());
@@ -593,14 +609,14 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 		return sb.toString();
 	}
 	
-	public String getColoredStringUsage(boolean last) {
+	public String getColoredStringUsage(boolean last, Permissible permissible) {
 		StringBuilder sb;
 		sb = new StringBuilder();
 		if (parent == null) {
 			sb.append(ChatColor.GRAY + "/" + ChatColor.GOLD + command.getName());
 		}
 		else {
-			sb.append(parent.getColoredStringUsage(false));
+			sb.append(parent.getColoredStringUsage(false, permissible));
 			sb.append(" ");
 			sb.append(ChatColor.AQUA + getCommandName());
 		}
@@ -615,9 +631,14 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 				sb.append(ChatColor.DARK_PURPLE + argument.getName());
 			}
 		}
-		if (children.size() > 0 && last) {
+		if (last && children.values().stream().anyMatch(
+				c -> c.getCommand().getPermission() == null ||
+					 permissible.hasPermission(c.getCommand().getPermission()))) {
 			sb.append(" " + ChatColor.GREEN);
-			Iterator<CommandNode> iterator = children.values().iterator();
+			Iterator<CommandNode> iterator = children.values().stream()
+					.filter(c -> c.getCommand().getPermission() == null ||
+								 permissible.hasPermission(c.getCommand().getPermission()))
+					.sorted(Comparator.comparing(CommandNode::getCommandName)).iterator();
 			while (iterator.hasNext()) {
 				CommandNode child = iterator.next();
 				sb.append(child.getCommandName());
@@ -628,7 +649,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 	}
 	
 	public String getActionBarUsage(String startElement, String endElement,
-									boolean[] editingCurrent, boolean last) {
+									boolean[] editingCurrent, boolean last,
+									Permissible permissible) {
 		StringBuilder sb;
 		sb = new StringBuilder();
 		sb.append(ChatColor.GRAY);
@@ -636,7 +658,8 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 			sb.append("/" + command.getName());
 		}
 		else {
-			sb.append(parent.getActionBarUsage(startElement, endElement, editingCurrent, false));
+			sb.append(parent.getActionBarUsage(startElement, endElement, editingCurrent, false,
+					permissible));
 			sb.append(" " + command.getName());
 		}
 		List<FrameworkCommandElement> elements = command.getElements();
@@ -662,11 +685,16 @@ public class CommandNode extends Command implements PluginIdentifiableCommand {
 			}
 			if (element.getName().equals(endElement)) editingCurrent[0] = false;
 		}
-		if (children.size() > 0 && last) {
+		if (last && children.values().stream().anyMatch(
+				c -> c.getCommand().getPermission() == null ||
+					 permissible.hasPermission(c.getCommand().getPermission()))) {
 			sb.append(" ");
 			if (startElement == null) editingCurrent[0] = true;
 			if (editingCurrent[0]) sb.append(ChatColor.GREEN);
-			Iterator<CommandNode> iterator = children.values().iterator();
+			Iterator<CommandNode> iterator = children.values().stream()
+					.filter(c -> c.getCommand().getPermission() == null ||
+								 permissible.hasPermission(c.getCommand().getPermission()))
+					.sorted(Comparator.comparing(CommandNode::getCommandName)).iterator();
 			while (iterator.hasNext()) {
 				CommandNode child = iterator.next();
 				sb.append(child.getCommandName());
