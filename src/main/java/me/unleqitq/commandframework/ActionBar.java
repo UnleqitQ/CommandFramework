@@ -9,10 +9,11 @@ public class ActionBar {
 	
 	public static void sendActionBar(@NotNull CommandContext context, String startElement,
 									 String endElement) {
-		Player player = (Player) context.getSender();
-		String usage = context.commandNode.getActionBarUsage(startElement, endElement,
-				new boolean[] {false}, true, player);
-		player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(usage));
+		if (context.getSender() instanceof Player player) {
+			String usage = context.commandNode.getActionBarUsage(startElement, endElement,
+					new boolean[] {false}, true, player);
+			player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(usage));
+		}
 	}
 	
 }
